@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Http\Requests\Admin;
+
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
+
+class ReceiveStockRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return $this->user()?->hasPermission('manage_inventory') ?? false;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'item_id' => ['required', 'integer', 'exists:items,id'],
+            'quantity' => ['required', 'numeric', 'gt:0'],
+            'location' => ['nullable', 'string', 'max:255'],
+            'lot_no' => ['nullable', 'string', 'max:255'],
+            'received_date' => ['required', 'date'],
+            'expiration_date' => ['nullable', 'date', 'after_or_equal:received_date'],
+            'unit_cost' => ['nullable', 'numeric', 'min:0'],
+            'reason' => ['nullable', 'string', 'max:1000'],
+        ];
+    }
+}
