@@ -11,13 +11,16 @@ use App\Models\Category;
 use App\Models\Department;
 use App\Models\Item;
 use App\Models\Office;
+use App\Services\CatalogItemStockService;
 use App\Services\CatalogManagementService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 
 class CatalogController extends Controller
 {
-    public function __construct(private readonly CatalogManagementService $catalog) {}
+    public function __construct(private readonly CatalogManagementService $catalog, private readonly CatalogItemStockService $itemStock) {}
 
     public function index(): View
     {
@@ -32,7 +35,6 @@ class CatalogController extends Controller
     public function create(string $type): View
     {
         abort_unless(in_array($type, ['departments', 'offices', 'categories', 'items'], true), 404);
-
         return view('admin.catalog.form', [
             'type' => $type, 'record' => null,
             'departments' => Department::where('is_active', true)->orderBy('name')->get(),
@@ -40,10 +42,31 @@ class CatalogController extends Controller
         ]);
     }
 
+    public function lookupItem(Request $request): JsonResponse
+    {
+        $request->validate(['stock_no' => ['required', 'string', 'max:100', 'alpha_dash']]);
+        $item = Item::with('inventory')->where('stock_no', $request->query('stock_no'))->first();
+        if (!$item) return response()->json(['exists' => false]);
+        return response()->json([
+            'exists' => true,
+            'id' => $item->id,
+            'name' => $item->name,
+            'category_id' => $item->category_id,
+            'classification' => $item->classification,
+            'unit_of_measure' => $item->unit_of_measure,
+            'quantity_on_hand' => $item->inventory?->quantity_on_hand ?? '0.000',
+            'is_active' => $item->is_active,
+        ]);
+    }
+
     public function storeDepartment(DepartmentRequest $request): RedirectResponse { $this->catalog->create(new Department(), $request->validated(), $request->user(), $request->ip(), $request->userAgent()); return $this->back(); }
     public function storeOffice(OfficeRequest $request): RedirectResponse { $this->catalog->create(new Office(), $request->validated(), $request->user(), $request->ip(), $request->userAgent()); return $this->back(); }
     public function storeCategory(CategoryRequest $request): RedirectResponse { $this->catalog->create(new Category(), $request->validated(), $request->user(), $request->ip(), $request->userAgent()); return $this->back(); }
-    public function storeItem(ItemRequest $request): RedirectResponse { $this->catalog->create(new Item(), $request->validated(), $request->user(), $request->ip(), $request->userAgent()); return $this->back(); }
+    public function storeItem(ItemRequest $request): RedirectResponse
+    {
+        $message = $this->itemStock->save($request->validated(), $request->user(), $request->ip(), $request->userAgent());
+        return redirect()->route('admin.catalog.index')->with('status', $message);
+    }
 
     public function edit(string $type, int $id): View
     {
@@ -60,8 +83,8 @@ class CatalogController extends Controller
     public function updateCategory(CategoryRequest $request, Category $category): RedirectResponse { $this->catalog->update($category, $request->validated(), $request->user(), $request->ip(), $request->userAgent()); return $this->back(); }
     public function updateItem(ItemRequest $request, Item $item): RedirectResponse { $this->catalog->update($item, $request->validated(), $request->user(), $request->ip(), $request->userAgent()); return $this->back(); }
 
-    public function deactivate(\Illuminate\Http\Request $request, string $type, int $id): RedirectResponse { $this->catalog->deactivate($this->modelFor($type)::findOrFail($id), $request->user(), $request->ip(), $request->userAgent()); return $this->back(); }
-    public function activate(\Illuminate\Http\Request $request, string $type, int $id): RedirectResponse { $this->catalog->activate($this->modelFor($type)::findOrFail($id), $request->user(), $request->ip(), $request->userAgent()); return $this->back(); }
+    public function deactivate(Request $request, string $type, int $id): RedirectResponse { $this->catalog->deactivate($this->modelFor($type)::findOrFail($id), $request->user(), $request->ip(), $request->userAgent()); return $this->back(); }
+    public function activate(Request $request, string $type, int $id): RedirectResponse { $this->catalog->activate($this->modelFor($type)::findOrFail($id), $request->user(), $request->ip(), $request->userAgent()); return $this->back(); }
 
     private function modelFor(string $type): string
     {

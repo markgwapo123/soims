@@ -64,6 +64,7 @@ Route::middleware(['auth', 'permission:manage_users'])->prefix('admin')->name('a
 
 Route::middleware(['auth', 'permission:manage_catalog'])->prefix('admin/catalog')->name('admin.catalog.')->group(function () {
     Route::get('/', [CatalogController::class, 'index'])->name('index');
+    Route::get('items/lookup', [CatalogController::class, 'lookupItem'])->name('items.lookup');
     Route::get('{type}/create', [CatalogController::class, 'create'])->name('create');
     Route::get('{type}/{id}/edit', [CatalogController::class, 'edit'])->name('edit');
     Route::post('departments', [CatalogController::class, 'storeDepartment'])->name('departments.store');
