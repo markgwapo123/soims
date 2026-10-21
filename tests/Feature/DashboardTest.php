@@ -61,6 +61,9 @@ class DashboardTest extends TestCase
             ->assertSee('Low stock items')
             ->assertSee('Manage users')
             ->assertSee('Receive stock')
+            ->assertDontSee('>My requests</a>', false)
+            ->assertDontSee('>New request</a>', false)
+            ->assertDontSee('My supply requests')
             ->assertSee('Recent receiving transactions')
             ->assertSee($item->name)
             ->assertSee('Recent activity')
@@ -114,6 +117,8 @@ class DashboardTest extends TestCase
 
         $this->actingAs($programUser)->get(route('dashboard'))
             ->assertOk()
+            ->assertSee('>My requests</a>', false)
+            ->assertSee('>New request</a>', false)
             ->assertSee('Submitted requests')
             ->assertSee($ownRequest->request_no)
             ->assertDontSee('REQ-DASH-OTHER')
