@@ -82,14 +82,14 @@
                 if (id !== latest) return;
                 if (!data.exists) { info.textContent = 'New item: the entered quantity will be initial stock.'; return; }
                 info.textContent = `Existing item: ${data.name} | Classification: ${data.classification} | Current stock: ${data.quantity_on_hand} ${data.unit_of_measure}.`;
+                for (const fieldName of ['name', 'description', 'category_id', 'classification', 'unit_of_measure', 'default_unit_price', 'reorder_level']) {
+                    const field = form.elements.namedItem(fieldName);
+                    if (field) field.value = data[fieldName] == null ? '' : String(data[fieldName]);
+                }
                 if (data.classification !== 'consumable' || !data.is_active) {
                     info.textContent += ' Stock addition is not available for this item.';
                     return;
                 }
-                form.elements.namedItem('name').value = data.name;
-                form.elements.namedItem('category_id').value = String(data.category_id);
-                form.elements.namedItem('unit_of_measure').value = data.unit_of_measure;
-                classification.value = data.classification;
                 wrap.hidden = false;
             } catch (error) {
                 if (id === latest) info.textContent = 'Could not check item. Please retry before saving.';
