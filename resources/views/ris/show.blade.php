@@ -31,7 +31,7 @@
                     @foreach ($ris->items as $line)
                         <tr>
                             <td>{{ $line->stock_no_snapshot }}</td><td>{{ $line->unit_snapshot }}</td><td>{{ $line->description_snapshot }}</td>
-                            <td>{{ $line->requested_quantity }}</td><td>{{ $line->available_quantity }}</td><td>{{ $line->issue_quantity }}</td><td>{{ $line->not_available_quantity }}</td>
+                            <td>{{ \App\Support\QuantityFormatter::display($line->requested_quantity) }}</td><td>{{ \App\Support\QuantityFormatter::display($line->available_quantity) }}</td><td>{{ \App\Support\QuantityFormatter::display($line->issue_quantity) }}</td><td>{{ \App\Support\QuantityFormatter::display($line->not_available_quantity) }}</td>
                             <td>{{ $line->unit_price }}</td><td>{{ $line->amount }}</td><td>{{ $line->availability() }}</td>
                         </tr>
                     @endforeach
