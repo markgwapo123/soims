@@ -25,11 +25,11 @@ class StockAvailabilityService
             $current = $this->currentQuantity($item);
             $available = $this->availableQuantity($item);
             $item->setAttribute('stock_current_quantity', $item->classification === 'accountable'
-                ? number_format($current, 0)
-                : number_format($current, 3, '.', ''));
+                ? \App\Support\QuantityFormatter::display($current)
+                : \App\Support\QuantityFormatter::display($current));
             $item->setAttribute('stock_available_quantity', $item->classification === 'accountable'
-                ? number_format($available, 0)
-                : number_format($available, 3, '.', ''));
+                ? \App\Support\QuantityFormatter::display($available)
+                : \App\Support\QuantityFormatter::display($available));
             $item->setAttribute('stock_status', $this->status($item, $available));
         }
 
