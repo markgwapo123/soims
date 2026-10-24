@@ -25,7 +25,7 @@
                 <thead><tr><th>Stock no.</th><th>Item</th><th>Unit</th><th>Requested</th><th>Confirmed</th></tr></thead>
                 <tbody>
                     @foreach ($supplyRequest->items as $line)
-                        <tr><td class="soims-approval-stock-no">{{ $line->item->stock_no }}</td><td><strong>{{ $line->item->name }}</strong></td><td>{{ $line->item->unit_of_measure }}</td><td>{{ $line->requested_quantity }}</td><td>{{ $line->confirmed_quantity ?? '-' }}</td></tr>
+                        <tr><td class="soims-approval-stock-no">{{ $line->item->stock_no }}</td><td><strong>{{ $line->item->name }}</strong></td><td>{{ $line->item->unit_of_measure }}</td><td>{{ \App\Support\QuantityFormatter::display($line->requested_quantity) }}</td><td>{{ $line->confirmed_quantity !== null ? \App\Support\QuantityFormatter::display($line->confirmed_quantity) : '-' }}</td></tr>
                     @endforeach
                 </tbody>
             </table>
