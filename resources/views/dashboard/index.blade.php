@@ -40,7 +40,7 @@
                 </header>
                 <div class="soims-dashboard__stock-metrics">
                     <div><span>Total items</span><strong>{{ number_format($stockSummary['total_items']) }}</strong></div>
-                    <div><span>Available stock</span><strong>{{ number_format($stockSummary['available_stock'], 3) }}</strong></div>
+                    <div><span>Available stock</span><strong>{{ \App\Support\QuantityFormatter::display($stockSummary['available_stock']) }}</strong></div>
                     <div><span>Low stock</span><strong>{{ number_format($stockSummary['low_stock_items']) }}</strong></div>
                     <div><span>Out of stock</span><strong>{{ number_format($stockSummary['out_of_stock_items']) }}</strong></div>
                     <div><span>Available assets</span><strong>{{ number_format($stockSummary['available_assets']) }}</strong></div>
@@ -116,7 +116,7 @@
                         <thead><tr><th>Item</th><th>Quantity</th><th>Received</th><th>Recorded by</th></tr></thead>
                         <tbody>
                             @foreach ($receivingTransactions as $transaction)
-                                <tr><td>{{ $transaction->item?->name ?? '-' }}</td><td>{{ $transaction->quantity }}</td><td>{{ $transaction->occurred_at?->format('Y-m-d H:i') }}</td><td>{{ $transaction->performer?->name ?? '-' }}</td></tr>
+                                <tr><td>{{ $transaction->item?->name ?? '-' }}</td><td>{{ \App\Support\QuantityFormatter::display($transaction->quantity) }}</td><td>{{ $transaction->occurred_at?->format('Y-m-d H:i') }}</td><td>{{ $transaction->performer?->name ?? '-' }}</td></tr>
                             @endforeach
                         </tbody>
                     </table>
