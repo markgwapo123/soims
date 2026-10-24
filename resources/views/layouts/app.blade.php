@@ -141,40 +141,88 @@
     (function () {
         const overlay = document.getElementById('soims-global-loading');
         const label = document.getElementById('soims-loading-label');
-        const actions = [
-            [/sign\s*out|log\s*out/i, 'Signing out...'],
-            [/log\s*in|sign\s*in/i, 'Signing in...'],
-            [/register|create account/i, 'Creating account...'],
-            [/approv/i, 'Approving request...'],
+        const actionLabels = [
+            [/sign\\s*out|log\\s*out/i, 'Signing out...'],
+            [/log\\s*in|sign\\s*in/i, 'Signing in...'],
+            [/create account|add user|new user/i, 'Creating account...'],
+            [/password/i, 'Updating password...'],
+            [/reconcil/i, 'Reconciling inventory...'],
+            [/complete count|complete inventory/i, 'Completing inventory count...'],
+            [/start count|start inventory/i, 'Starting inventory count...'],
+            [/inventory count|physical inventory/i, 'Saving inventory count...'],
+            [/mark.*read/i, 'Updating notifications...'],
             [/reject|decline/i, 'Rejecting request...'],
-            [/release|issu(e|ing)|prepare ris/i, 'Processing issuance...'],
-            [/return/i, 'Processing return...'],
-            [/receiv|add items|add stock|stock in/i, 'Adding stock to inventory...'],
-            [/request|submit/i, 'Submitting request...'],
-            [/delet|remov/i, 'Deleting record...'],
+            [/approv/i, 'Approving request...'],
+            [/revis/i, 'Updating request details...'],
+            [/release/i, 'Releasing supplies...'],
+            [/prepare ris/i, 'Preparing RIS...'],
+            [/export|download|generat/i, 'Generating report...'],
+            [/assign/i, 'Assigning accountable item...'],
+            [/transfer/i, 'Updating asset assignment...'],
+            [/return/i, 'Processing property return...'],
+            [/cancel/i, 'Cancelling request...'],
             [/deactiv/i, 'Deactivating record...'],
             [/activat/i, 'Activating record...'],
+            [/delet|remov/i, 'Deleting record...'],
+            [/add items|add stock|stock in/i, 'Adding item to inventory...'],
+            [/creat|add new/i, 'Creating record...'],
             [/updat|edit|save/i, 'Saving changes...'],
-            [/search|filter/i, 'Loading results...'],
+            [/submit request|request/i, 'Submitting request...'],
+            [/filter|search/i, 'Filtering results...'],
         ];
-        function processLabel(element, fallback) {
+        const pageLabels = [
+            [/^\\/dashboard(?:\\/|$)/, 'Loading dashboard...'],
+            [/^\\/login(?:\\/|$)/, 'Loading login...'],
+            [/^\\/admin\\/inventory\\/receive(?:\\/|$)/, 'Loading Add Items...'],
+            [/^\\/admin\\/inventory(?:\\/|$)/, 'Loading inventory...'],
+            [/^\\/admin\\/catalog(?:\\/|$)/, 'Loading catalog...'],
+            [/^\\/requests(?:\\/|$)/, 'Loading supply requests...'],
+            [/^\\/approvals(?:\\/|$)/, 'Loading approvals...'],
+            [/^\\/ris(?:\\/|$)/, 'Loading RIS...'],
+            [/^\\/physical-inventories(?:\\/|$)/, 'Loading physical inventory...'],
+            [/^\\/accountable-items(?:\\/|$)/, 'Loading accountable assets...'],
+            [/^\\/property-returns(?:\\/|$)/, 'Loading property returns...'],
+            [/^\\/admin\\/users(?:\\/|$)/, 'Loading user management...'],
+            [/^\\/reports(?:\\/|$)/, 'Loading reports...'],
+            [/^\\/notifications(?:\\/|$)/, 'Loading notifications...'],
+            [/^\\/audit-logs(?:\\/|$)/, 'Loading audit logs...'],
+            [/^\\/stock-availability(?:\\/|$)/, 'Loading stock availability...'],
+        ];
+        function processLabel(element, fallback, isNavigation = false) {
             const explicit = element?.dataset?.loadingLabel;
             if (explicit) return explicit;
-            const text = [
+            if (isNavigation) {
+                const path = new URL(element.href, window.location.href).pathname;
+                return pageLabels.find(([pattern]) => pattern.test(path))?.[1] || fallback;
+            }
+            const form = element?.closest?.('form');
+            const action = (form?.getAttribute('action') || '').toLowerCase();
+            const labelText = [
                 element?.textContent || '',
                 element?.getAttribute?.('aria-label') || '',
                 element?.getAttribute?.('name') || '',
                 element?.getAttribute?.('value') || ''
             ].join(' ').trim();
-            const form = element?.closest?.('form');
-            const action = (form?.getAttribute('action') || '').toLowerCase();
-            for (const [pattern, message] of actions) {
-                if (pattern.test(text)) return message;
+            const routeLabels = [
+                [/\\/login(?:\\/|$)/, 'Signing in...'],
+                [/\\/logout(?:\\/|$)/, 'Signing out...'],
+                [/\\/admin\\/inventory\\/receive/, 'Adding item to inventory...'],
+                [/\\/notifications\\/read-all/, 'Updating notifications...'],
+                [/\\/ris\\//, 'Processing RIS...'],
+                [/\\/approvals\\//, 'Processing approval...'],
+                [/\\/property-returns\\//, 'Processing property return...'],
+                [/\\/accountable-items\\//, 'Updating accountable assets...'],
+                [/\\/physical-inventories\\//, 'Saving inventory count...'],
+                [/\\/admin\\/users\\//, 'Saving user details...'],
+                [/\\/admin\\/catalog\\//, 'Saving catalog changes...'],
+                [/\\/requests(?:\\/|$)/, 'Submitting supply request...'],
+            ];
+            for (const [pattern, message] of actionLabels) {
+                if (pattern.test(labelText)) return message;
             }
-            for (const [pattern, message] of actions) {
-                if (pattern.test(action)) return message;
-            }
-            return fallback;
+            return routeLabels.find(([pattern]) => pattern.test(action))?.[1]
+                || actionLabels.find(([pattern]) => pattern.test(action))?.[1]
+                || fallback;
         }
         function show(message) {
             label.textContent = message;
@@ -201,7 +249,7 @@
             const destination = new URL(link.href, window.location.href);
             if (destination.origin !== window.location.origin || destination.href === window.location.href) return;
             setTimeout(function () {
-                if (!event.defaultPrevented) show(processLabel(link, 'Loading page...'));
+                if (!event.defaultPrevented) show(processLabel(link, 'Loading page...', true));
             }, 0);
         });
         window.addEventListener('pageshow', hide);
