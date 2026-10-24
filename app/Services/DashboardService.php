@@ -41,7 +41,7 @@ class DashboardService
         }
 
         if ($user->hasPermission('manage_inventory')) {
-            $stats[] = ['label' => 'Total inventory quantity', 'value' => rtrim(rtrim(number_format($stockSummary['current_stock'], 3, '.', ''), '0'), '.'), 'url' => route('admin.inventory.index')];
+            $stats[] = ['label' => 'Total inventory quantity', 'value' => (str_contains(number_format($stockSummary['current_stock'], 3, '.', ''), '.') ? rtrim(rtrim(number_format($stockSummary['current_stock'], 3, '.', ''), '0'), '.') : number_format($stockSummary['current_stock'], 0, '.', '')), 'url' => route('admin.inventory.index')];
             $stats[] = ['label' => 'Open physical counts', 'value' => PhysicalInventory::where('status', PhysicalInventory::STATUS_DRAFT)->count(), 'url' => route('physical-inventories.index')];
             $stats[] = ['label' => 'Low stock items', 'value' => $stockSummary['low_stock_items'], 'url' => route('stock-availability.index')];
             $actions[] = ['label' => 'Inventory', 'url' => route('admin.inventory.index')];
