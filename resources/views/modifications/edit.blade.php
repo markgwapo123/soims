@@ -20,7 +20,7 @@
                             @php($currentItemId = $line->confirmed_item_id ?? $line->item_id)
                             <tr>
                                 <td>{{ $line->item->stock_no }} - {{ $line->item->name }}</td>
-                                <td>{{ $line->requested_quantity }}</td>
+                                <td>{{ \App\Support\QuantityFormatter::display($line->requested_quantity) }}</td>
                                 <td>
                                     <input type="hidden" name="lines[{{ $index }}][id]" value="{{ $line->id }}">
                                     <select class="soims-input" name="lines[{{ $index }}][confirmed_item_id]" aria-label="Confirmed item for {{ $line->item->name }}">
