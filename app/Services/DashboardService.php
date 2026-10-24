@@ -61,7 +61,7 @@ class DashboardService
             $recentRequests = (clone $requests)->with(['requestor', 'department'])->latest('updated_at')->limit(6)->get();
         }
 
-        if ($user->hasRole('program_department') || ($user->hasRole('supply_sub_administrator') && $user->hasPermission('submit_supply_requests'))) {
+        if (! $user->hasRole('supply_administrator') && ($user->hasRole('program_department') || ($user->hasRole('supply_sub_administrator') && $user->hasPermission('submit_supply_requests')))) {
             $ownRequests = SupplyRequest::where('requestor_id', $user->id);
             $stats[] = ['label' => 'Submitted requests', 'value' => (clone $ownRequests)->count(), 'url' => route('requests.index')];
             $stats[] = ['label' => 'Pending requests', 'value' => (clone $ownRequests)->where('status', SupplyRequest::STATUS_SUBMITTED)->count(), 'url' => route('requests.index')];

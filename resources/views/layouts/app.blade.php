@@ -30,7 +30,7 @@
                             <a class="soims-sidebar__link {{ request()->routeIs('reports.*') ? 'is-active' : '' }}" href="{{ route('reports.index') }}">Reports</a>
                         @endif
 
-                        @if (auth()->user()->hasPermission('submit_supply_requests'))
+                        @if (auth()->user()->hasPermission('submit_supply_requests') && ! auth()->user()->hasRole('supply_administrator'))
                             <p class="soims-sidebar__group">Requests</p>
                             <a class="soims-sidebar__link {{ request()->routeIs('requests.*') ? 'is-active' : '' }}" href="{{ route('requests.index') }}">My requests</a>
                             <a class="soims-sidebar__link" href="{{ route('requests.create') }}">New request</a>

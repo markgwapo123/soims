@@ -28,19 +28,14 @@ class CatalogItemStockService
                 if (!$existing->is_active) {
                     throw ValidationException::withMessages(['stock_no' => 'This item is inactive. Activate it before adding stock.']);
                 }
-                foreach (['name', 'category_id', 'unit_of_measure'] as $field) {
-                    if ((string) $existing->{$field} !== (string) $input[$field]) {
-                        throw ValidationException::withMessages([$field => 'This value must match the existing item. Use Edit Item to change its details.']);
-                    }
-                }
                 if (empty($input['confirm_existing'])) {
                     throw ValidationException::withMessages(['confirm_existing' => 'Confirm the existing item before adding quantity.']);
                 }
                 if ($quantity <= 0) {
                     throw ValidationException::withMessages(['quantity' => 'Quantity to add must be greater than zero.']);
                 }
-                $item = $existing;
-                $message = 'Quantity added to existing item successfully.';
+                $item = $this->catalog->update($existing, $attributes, $actor, $ip, $agent);
+                $message = 'Existing item details updated and quantity added successfully.';
             } else {
                 $item = $this->catalog->create(new Item(), $attributes, $actor, $ip, $agent);
                 $message = 'Item created and initial stock saved.';
