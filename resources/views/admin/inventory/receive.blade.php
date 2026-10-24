@@ -72,6 +72,19 @@
 	</form>
 </x-ui.card>
 
+<script type="application/json" id="existing-items-data">{!! $existingItems->map(function ($item) { return [
+'id' => $item->id,
+'stock_no' => $item->stock_no,
+'name' => $item->name,
+'description' => $item->description,
+'brand' => $item->brand,
+'quality' => $item->quality,
+'supplier' => $item->supplier,
+'category_id' => $item->category_id,
+'classification' => $item->classification,
+'unit_of_measure' => $item->unit_of_measure,
+'quantity' => $item->inventory?->quantity_on_hand ?? 0,
+]; })->values()->toJson(JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.querySelector('.soims-receive-form');
@@ -81,19 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const itemIdField = document.getElementById('existing_item_id');
     const panel = document.getElementById('existing-stock-details');
     const quantityText = document.getElementById('existing-stock-quantity');
-    const items = @json($existingItems->map(fn ($item) => [
-        'id' => $item->id,
-        'stock_no' => $item->stock_no,
-        'name' => $item->name,
-        'description' => $item->description,
-        'brand' => $item->brand,
-        'quality' => $item->quality,
-        'supplier' => $item->supplier,
-        'category_id' => $item->category_id,
-        'classification' => $item->classification,
-        'unit_of_measure' => $item->unit_of_measure,
-        'quantity' => $item->inventory?->quantity_on_hand ?? 0,
-    ])->values());
+    const items = JSON.parse(document.getElementById('existing-items-data').textContent);
     stockField.setAttribute('list', 'stock-number-matches');
     nameField.setAttribute('list', 'item-name-matches');
 
