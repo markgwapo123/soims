@@ -14,8 +14,6 @@
 			<h2 id="receive-details-title" class="soims-receive-group__title">Item details</h2>
 			<div class="soims-receive-fields">
 				<input type="hidden" id="existing_item_id" name="item_id" value="{{ old('item_id') }}">
-                <datalist id="stock-number-matches">@foreach ($existingItems as $existing)<option value="{{ $existing->stock_no }}">{{ $existing->name }}</option>@endforeach</datalist>
-                <datalist id="item-name-matches">@foreach ($existingItems as $existing)<option value="{{ $existing->name }}">{{ $existing->stock_no }}</option>@endforeach</datalist>
                 <x-ui.input label="Item name" name="name" value="{{ old('name') }}" required />
 				<x-ui.input label="Code / Stock number" name="stock_no" value="{{ old('stock_no') }}" required />
 				<x-ui.input label="Description" name="description" value="{{ old('description') }}" />
@@ -95,8 +93,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const panel = document.getElementById('existing-stock-details');
     const quantityText = document.getElementById('existing-stock-quantity');
     const items = JSON.parse(document.getElementById('existing-items-data').textContent);
-    stockField.setAttribute('list', 'stock-number-matches');
-    nameField.setAttribute('list', 'item-name-matches');
 
     function clearExisting() {
         itemIdField.value = '';
@@ -119,16 +115,20 @@ document.addEventListener('DOMContentLoaded', function () {
         if (matches.length === 1) fill(matches[0]);
         else clearExisting();
     }
-    stockField.addEventListener('input', () => {
-        if (itemIdField.value) clearExisting();
-    });
-    nameField.addEventListener('input', () => {
-        if (itemIdField.value) clearExisting();
-    });
-    stockField.addEventListener('change', () => match('stock_no', stockField.value));
-    nameField.addEventListener('change', () => match('name', nameField.value));
-    stockField.addEventListener('blur', () => match('stock_no', stockField.value));
-    nameField.addEventListener('blur', () => match('name', nameField.value));
+    function onLookupInput(key, input) {
+        const previousId = itemIdField.value;
+        const previous = items.find(item => String(item.id) === String(previousId));
+        const value = input.value;
+        if (previous && String(previous[key]).toLowerCase() !== value.trim().toLowerCase()) {
+            clearExisting();
+            for (const other of ['stock_no', 'name', 'description', 'brand', 'quality', 'supplier', 'category_id', 'classification', 'unit_of_measure']) {
+                if (other !== key && field(other)) field(other).value = '';
+            }
+        }
+        match(key, value);
+    }
+    stockField.addEventListener('input', () => onLookupInput('stock_no', stockField));
+    nameField.addEventListener('input', () => onLookupInput('name', nameField));
     if (itemIdField.value) {
         const existing = items.find(item => String(item.id) === String(itemIdField.value));
         if (existing) fill(existing);
