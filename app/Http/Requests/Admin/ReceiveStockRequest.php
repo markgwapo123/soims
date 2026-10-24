@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ReceiveStockRequest extends FormRequest
 {
@@ -24,7 +25,7 @@ class ReceiveStockRequest extends FormRequest
     {
         return [
             'item_id' => ['nullable', 'integer', 'exists:items,id'],
-            'stock_no' => ['required_without:item_id', 'nullable', 'string', 'max:100', 'alpha_dash', 'unique:items,stock_no'],
+            'stock_no' => ['required_without:item_id', 'nullable', 'string', 'max:100', 'alpha_dash', Rule::unique('items', 'stock_no')->ignore($this->input('item_id'))],
             'name' => ['required_without:item_id', 'nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'brand' => ['nullable', 'string', 'max:255'],
