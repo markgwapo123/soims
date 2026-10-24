@@ -9,6 +9,7 @@ use App\Models\Item;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Arr;
+use Illuminate\Validation\ValidationException;
 
 class InventoryService
 {
@@ -17,6 +18,19 @@ class InventoryService
     public function receive(array $attributes, User $performedBy, ?string $ipAddress = null, ?string $userAgent = null): Inventory
     {
         return DB::transaction(function () use ($attributes, $performedBy, $ipAddress, $userAgent): Inventory {
+            if (!empty($attributes['item_id'])) {
+                $selectedItem = Item::findOrFail($attributes['item_id']);
+                if (!$selectedItem->is_active || $selectedItem->stock_no !== ($attributes['stock_no'] ?? null)) {
+                    throw ValidationException::withMessages([
+                        'stock_no' => 'The selected existing item does not match this stock number.',
+                    ]);
+                }
+                if (isset($attributes['classification']) && $attributes['classification'] !== $selectedItem->classification) {
+                    throw ValidationException::withMessages([
+                        'classification' => 'Classification cannot be changed while adding stock to an existing item.',
+                    ]);
+                }
+            }
             $item = isset($attributes['item_id'])
                 ? Item::findOrFail($attributes['item_id'])
                 : Item::create(Arr::only($attributes, [
