@@ -32,8 +32,8 @@
                                     <td class="soims-ris__number">{{ $row['item']->stock_no }}</td>
                                     <td><strong>{{ $row['item']->name }}</strong></td>
                                     <td>{{ $row['item']->unit_of_measure }}</td>
-                                    <td>{{ number_format($row['requested'], 3, '.', '') }}</td>
-                                    <td><span class="soims-ris__quantity">{{ number_format($row['available'], 3, '.', '') }}</span></td>
+                                    <td>{{ \App\Support\QuantityFormatter::display($row['requested']) }}</td>
+                                    <td><span class="soims-ris__quantity">{{ \App\Support\QuantityFormatter::display($row['available']) }}</span></td>
                                     <td><input class="soims-input soims-ris__quantity-input" type="number" min="0" max="{{ $row['max_issue'] }}" step="0.001" name="issue[{{ $row['line']->id }}]" value="{{ old('issue.'.$row['line']->id, number_format($row['max_issue'], 3, '.', '')) }}" aria-label="Issue quantity for {{ $row['item']->name }}"></td>
                                 </tr>
                             @empty
