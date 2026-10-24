@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ReceiveStockRequest;
+use App\Models\Category;
 use App\Models\Inventory;
 use App\Models\Item;
 use App\Services\InventoryService;
@@ -24,7 +25,9 @@ class InventoryController extends Controller
 
     public function create(): View
     {
-        return view('admin.inventory.receive', ['items' => Item::where('is_active', true)->orderBy('name')->get()]);
+        return view('admin.inventory.receive', [
+            'categories' => Category::where('is_active', true)->orderBy('name')->get(),
+        ]);
     }
 
     public function store(ReceiveStockRequest $request): RedirectResponse

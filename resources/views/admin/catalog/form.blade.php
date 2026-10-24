@@ -30,6 +30,9 @@
                 <x-ui.input label="Description" name="description" value="{{ old('description', $record?->description) }}" />
             @else
                 <x-ui.input label="Description" name="description" value="{{ old('description', $record?->description) }}" />
+                <x-ui.input label="Brand" name="brand" value="{{ old('brand', $record?->brand) }}" />
+                <x-ui.input label="Quality" name="quality" value="{{ old('quality', $record?->quality) }}" />
+                <x-ui.input label="Supplier" name="supplier" value="{{ old('supplier', $record?->supplier) }}" />
                 <div class="soims-field"><label class="soims-label" for="category_id">Category</label><select class="soims-input" name="category_id" id="category_id" required>@foreach($categories as $category)<option value="{{ $category->id }}" @selected((string) old('category_id', $record?->category_id) === (string) $category->id)>{{ $category->name }}</option>@endforeach</select></div>
                 <div class="soims-field"><label class="soims-label" for="classification">Classification</label><select class="soims-input" name="classification" id="classification" required><option value="consumable" @selected(old('classification', $record?->classification) === 'consumable')>Consumable</option><option value="accountable" @selected(old('classification', $record?->classification) === 'accountable')>Accountable</option></select></div>
                 <x-ui.input label="Unit of measure" name="unit_of_measure" value="{{ old('unit_of_measure', $record?->unit_of_measure) }}" required />

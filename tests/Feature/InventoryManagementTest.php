@@ -29,13 +29,17 @@ class InventoryManagementTest extends TestCase
         $admin = User::factory()->create();
         $admin->roles()->attach(Role::where('key', 'supply_administrator')->firstOrFail(), ['assigned_at' => now()]);
         $category = Category::create(['code' => 'PAPER', 'name' => 'Paper', 'is_active' => true]);
-        $item = Item::create(['stock_no' => 'PAPER_A4', 'name' => 'A4 Paper', 'category_id' => $category->id, 'classification' => 'consumable', 'unit_of_measure' => 'ream', 'is_active' => true]);
-
         $this->actingAs($admin)->post(route('admin.inventory.receive.store'), [
-            'item_id' => $item->id, 'quantity' => 10, 'location' => 'Supply Room', 'lot_no' => 'LOT-1',
+            'stock_no' => 'PAPER_A4', 'name' => 'A4 Paper', 'category_id' => $category->id,
+            'classification' => 'consumable', 'unit_of_measure' => 'ream', 'brand' => 'PaperPro',
+            'quality' => 'Premium', 'supplier' => 'Office Supply Co.', 'quantity' => 10, 'location' => 'Supply Room', 'lot_no' => 'LOT-1',
             'received_date' => '2026-10-02', 'unit_cost' => 250, 'reason' => 'Initial receipt',
         ])->assertRedirect(route('admin.inventory.index'));
 
+        $item = Item::where('stock_no', 'PAPER_A4')->firstOrFail();
+        $this->assertSame('PaperPro', $item->brand);
+        $this->assertSame('Premium', $item->quality);
+        $this->assertSame('Office Supply Co.', $item->supplier);
         $this->assertSame('10.000', Inventory::where('item_id', $item->id)->firstOrFail()->quantity_on_hand);
         $this->assertDatabaseHas('inventory_transactions', ['item_id' => $item->id, 'type' => 'receipt', 'quantity' => 10]);
         $this->assertDatabaseHas('inventory_lots', ['item_id' => $item->id, 'lot_no' => 'LOT-1', 'quantity_on_hand' => 10]);

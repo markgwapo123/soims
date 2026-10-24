@@ -8,7 +8,7 @@
 			<h1 class="soims-title">Inventory</h1>
 			<p class="soims-lead">Current balances are updated through transactional inventory movements.</p>
 		</div>
-		<a class="soims-button soims-button--primary" href="{{ route('admin.inventory.receive') }}">Receive stock</a>
+		<a class="soims-button soims-button--primary" href="{{ route('admin.inventory.receive') }}">Add Items</a>
 	</header>
 
 	@if (session('status'))<p class="soims-status">{{ session('status') }}</p>@endif
@@ -32,7 +32,7 @@
 							<td><a class="soims-inventory__stock-card" href="{{ route('admin.inventory.stock-card', $inventory->item) }}">Stock card</a></td>
 						</tr>
 					@empty
-						<tr><td class="soims-inventory__empty" colspan="6">No inventory balances yet. Receive stock to start tracking available quantities.</td></tr>
+						<tr><td class="soims-inventory__empty" colspan="6">No inventory balances yet. Add items to start tracking available quantities.</td></tr>
 					@endforelse
 				</tbody>
 			</table>

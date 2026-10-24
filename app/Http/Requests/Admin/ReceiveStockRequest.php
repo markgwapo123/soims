@@ -23,7 +23,16 @@ class ReceiveStockRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'item_id' => ['required', 'integer', 'exists:items,id'],
+            'item_id' => ['nullable', 'integer', 'exists:items,id'],
+            'stock_no' => ['required_without:item_id', 'nullable', 'string', 'max:100', 'alpha_dash', 'unique:items,stock_no'],
+            'name' => ['required_without:item_id', 'nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'brand' => ['nullable', 'string', 'max:255'],
+            'quality' => ['nullable', 'string', 'max:255'],
+            'supplier' => ['nullable', 'string', 'max:255'],
+            'category_id' => ['required_without:item_id', 'nullable', 'integer', 'exists:categories,id'],
+            'classification' => ['required_without:item_id', 'nullable', 'in:consumable,accountable'],
+            'unit_of_measure' => ['required_without:item_id', 'nullable', 'string', 'max:50'],
             'quantity' => ['required', 'numeric', 'gt:0'],
             'location' => ['nullable', 'string', 'max:255'],
             'lot_no' => ['nullable', 'string', 'max:255'],

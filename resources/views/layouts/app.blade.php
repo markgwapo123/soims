@@ -47,7 +47,7 @@
                             @endif
                             @if (auth()->user()->hasPermission('manage_inventory'))
                                 <a class="soims-sidebar__link {{ request()->routeIs('admin.inventory.*') ? 'is-active' : '' }}" href="{{ route('admin.inventory.index') }}">Inventory</a>
-                                <a class="soims-sidebar__link {{ request()->routeIs('admin.inventory.receive*') ? 'is-active' : '' }}" href="{{ route('admin.inventory.receive') }}">Receive stock</a>
+                                <a class="soims-sidebar__link {{ request()->routeIs('admin.inventory.receive*') ? 'is-active' : '' }}" href="{{ route('admin.inventory.receive') }}">Add Items</a>
                                 <a class="soims-sidebar__link {{ request()->routeIs('physical-inventories.*') ? 'is-active' : '' }}" href="{{ route('physical-inventories.index') }}">Physical inventory</a>
                             @endif
                             @if (auth()->user()->hasPermission('issue_supplies'))

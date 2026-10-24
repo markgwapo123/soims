@@ -11,7 +11,7 @@ class Item extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['stock_no', 'name', 'description', 'category_id', 'classification', 'unit_of_measure', 'default_unit_price', 'reorder_level', 'is_active'];
+    protected $fillable = ['stock_no', 'name', 'description', 'brand', 'quality', 'supplier', 'category_id', 'classification', 'unit_of_measure', 'default_unit_price', 'reorder_level', 'is_active'];
 
     protected function casts(): array { return ['is_active' => 'boolean', 'default_unit_price' => 'decimal:2', 'reorder_level' => 'decimal:3']; }
 

@@ -5,8 +5,10 @@ namespace App\Services;
 use App\Models\Inventory;
 use App\Models\InventoryLot;
 use App\Models\InventoryTransaction;
+use App\Models\Item;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Arr;
 
 class InventoryService
 {
@@ -15,7 +17,21 @@ class InventoryService
     public function receive(array $attributes, User $performedBy, ?string $ipAddress = null, ?string $userAgent = null): Inventory
     {
         return DB::transaction(function () use ($attributes, $performedBy, $ipAddress, $userAgent): Inventory {
+            $item = isset($attributes['item_id'])
+                ? Item::findOrFail($attributes['item_id'])
+                : Item::create(Arr::only($attributes, [
+                    'stock_no', 'name', 'description', 'brand', 'quality', 'supplier',
+                    'category_id', 'classification', 'unit_of_measure',
+                ]));
+
+            $itemDetails = Arr::only($attributes, ['brand', 'quality', 'supplier']);
+            if ($itemDetails !== []) {
+                $item->update($itemDetails);
+            }
+
+            $attributes['item_id'] = $item->id;
             $quantity = (float) $attributes['quantity'];
+
             $inventory = Inventory::lockForUpdate()->firstOrCreate(
                 ['item_id' => $attributes['item_id']],
                 ['quantity_on_hand' => 0, 'quantity_reserved' => 0]
