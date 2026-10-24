@@ -107,5 +107,107 @@
                 <footer class="soims-footer"><div class="soims-footer__inner">West Visayas State University - Himamaylan City Campus</div></footer>
             </div>
         @endauth
+
+    <style>
+        .soims-loading-overlay[hidden] { display: none !important; }
+        .soims-loading-overlay {
+            position: fixed; inset: 0; z-index: 99999;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(12, 31, 50, .42); padding: 20px;
+        }
+        .soims-loading-dialog {
+            width: min(100%, 360px); background: #fff; color: #18324c;
+            border-radius: 16px; padding: 32px 26px; text-align: center;
+            box-shadow: 0 20px 65px rgba(0, 0, 0, .2);
+        }
+        .soims-loading-spinner {
+            width: 42px; height: 42px; margin: 0 auto 18px;
+            border: 4px solid #dbeaf5; border-top-color: #2189c3;
+            border-radius: 50%; animation: soims-loading-spin .75s linear infinite;
+        }
+        .soims-loading-title { font-weight: 700; font-size: 18px; margin: 0 0 8px; }
+        .soims-loading-description { font-size: 14px; margin: 0; color: #64748b; }
+        @keyframes soims-loading-spin { to { transform: rotate(360deg); } }
+        @media (prefers-reduced-motion: reduce) { .soims-loading-spinner { animation-duration: 2s; } }
+    </style>
+    <div class="soims-loading-overlay" id="soims-global-loading" hidden role="status" aria-live="polite" aria-label="Processing request">
+        <div class="soims-loading-dialog">
+            <div class="soims-loading-spinner" aria-hidden="true"></div>
+            <p class="soims-loading-title" id="soims-loading-label">Processing...</p>
+            <p class="soims-loading-description">Please wait while we complete your request.</p>
+        </div>
+    </div>
+    <script>
+    (function () {
+        const overlay = document.getElementById('soims-global-loading');
+        const label = document.getElementById('soims-loading-label');
+        const actions = [
+            [/sign\s*out|log\s*out/i, 'Signing out...'],
+            [/log\s*in|sign\s*in/i, 'Signing in...'],
+            [/register|create account/i, 'Creating account...'],
+            [/approv/i, 'Approving request...'],
+            [/reject|decline/i, 'Rejecting request...'],
+            [/release|issu(e|ing)|prepare ris/i, 'Processing issuance...'],
+            [/return/i, 'Processing return...'],
+            [/receiv|add items|add stock|stock in/i, 'Adding stock to inventory...'],
+            [/request|submit/i, 'Submitting request...'],
+            [/delet|remov/i, 'Deleting record...'],
+            [/deactiv/i, 'Deactivating record...'],
+            [/activat/i, 'Activating record...'],
+            [/updat|edit|save/i, 'Saving changes...'],
+            [/search|filter/i, 'Loading results...'],
+        ];
+        function processLabel(element, fallback) {
+            const explicit = element?.dataset?.loadingLabel;
+            if (explicit) return explicit;
+            const text = [
+                element?.textContent || '',
+                element?.getAttribute?.('aria-label') || '',
+                element?.getAttribute?.('name') || '',
+                element?.getAttribute?.('value') || ''
+            ].join(' ').trim();
+            const form = element?.closest?.('form');
+            const action = (form?.getAttribute('action') || '').toLowerCase();
+            for (const [pattern, message] of actions) {
+                if (pattern.test(text)) return message;
+            }
+            for (const [pattern, message] of actions) {
+                if (pattern.test(action)) return message;
+            }
+            return fallback;
+        }
+        function show(message) {
+            label.textContent = message;
+            overlay.hidden = false;
+        }
+        function hide() { overlay.hidden = true; }
+        document.addEventListener('submit', function (event) {
+            const form = event.target;
+            if (!(form instanceof HTMLFormElement) || event.defaultPrevented) return;
+            if (!form.checkValidity()) return;
+            if (form.target && form.target !== '_self') return;
+            const submitter = event.submitter || form.querySelector('[type="submit"]');
+            setTimeout(function () {
+                if (!event.defaultPrevented) show(processLabel(submitter || form, 'Processing request...'));
+            }, 0);
+        });
+        document.addEventListener('click', function (event) {
+            const link = event.target.closest?.('a[href]');
+            if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            if (link.target && link.target !== '_self') return;
+            if (link.hasAttribute('download') || link.dataset.noLoading !== undefined) return;
+            const href = link.getAttribute('href');
+            if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+            const destination = new URL(link.href, window.location.href);
+            if (destination.origin !== window.location.origin || destination.href === window.location.href) return;
+            setTimeout(function () {
+                if (!event.defaultPrevented) show(processLabel(link, 'Loading page...'));
+            }, 0);
+        });
+        window.addEventListener('pageshow', hide);
+        window.addEventListener('pagehide', hide);
+        window.SOIMSLoading = { show, hide };
+    })();
+    </script>
     </body>
 </html>
