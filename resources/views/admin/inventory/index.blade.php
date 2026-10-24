@@ -26,9 +26,9 @@
 						<tr>
 							<td class="soims-inventory__stock-no">{{ $inventory->item->stock_no }}</td>
 							<td><strong>{{ $inventory->item->name }}</strong></td>
-							<td>{{ $inventory->quantity_on_hand }}</td>
-							<td>{{ $inventory->quantity_reserved }}</td>
-							<td><span class="soims-inventory__availability {{ (float) $inventory->quantity_available > 0 ? 'is-available' : 'is-unavailable' }}">{{ $inventory->quantity_available }}</span></td>
+							<td>{{ \App\Support\QuantityFormatter::display($inventory->quantity_on_hand) }}</td>
+							<td>{{ \App\Support\QuantityFormatter::display($inventory->quantity_reserved) }}</td>
+							<td><span class="soims-inventory__availability {{ (float) $inventory->quantity_available > 0 ? 'is-available' : 'is-unavailable' }}">{{ \App\Support\QuantityFormatter::display($inventory->quantity_available) }}</span></td>
 							<td><a class="soims-inventory__stock-card" href="{{ route('admin.inventory.stock-card', $inventory->item) }}">Stock card</a></td>
 						</tr>
 					@empty
