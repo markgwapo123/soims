@@ -10,7 +10,7 @@
                 <h1 class="soims-title">Stock availability</h1>
                 <p class="soims-lead">View current item availability before preparing or submitting a supply request.</p>
             </div>
-            @if (auth()->user()->hasPermission('submit_supply_requests'))
+            @if (auth()->user()->hasPermission('submit_supply_requests') && ! auth()->user()->hasRole('supply_administrator'))
                 <a class="soims-button soims-button--primary" href="{{ route('requests.create') }}">New request</a>
             @endif
         </header>
