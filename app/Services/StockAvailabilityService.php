@@ -24,12 +24,8 @@ class StockAvailabilityService
         foreach ($items as $item) {
             $current = $this->currentQuantity($item);
             $available = $this->availableQuantity($item);
-            $item->setAttribute('stock_current_quantity', $item->classification === 'accountable'
-                ? \App\Support\QuantityFormatter::display($current)
-                : \App\Support\QuantityFormatter::display($current));
-            $item->setAttribute('stock_available_quantity', $item->classification === 'accountable'
-                ? \App\Support\QuantityFormatter::display($available)
-                : \App\Support\QuantityFormatter::display($available));
+            $item->setAttribute('stock_current_quantity', \App\Support\QuantityFormatter::display($current));
+            $item->setAttribute('stock_available_quantity', \App\Support\QuantityFormatter::display($available));
             $item->setAttribute('stock_status', $this->status($item, $available));
         }
 
