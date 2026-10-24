@@ -13,7 +13,10 @@
 		<section class="soims-receive-group" aria-labelledby="receive-details-title">
 			<h2 id="receive-details-title" class="soims-receive-group__title">Item details</h2>
 			<div class="soims-receive-fields">
-				<x-ui.input label="Item name" name="name" value="{{ old('name') }}" required />
+				<input type="hidden" id="existing_item_id" name="item_id" value="{{ old('item_id') }}">
+                <datalist id="stock-number-matches">@foreach ($existingItems as $existing)<option value="{{ $existing->stock_no }}">{{ $existing->name }}</option>@endforeach</datalist>
+                <datalist id="item-name-matches">@foreach ($existingItems as $existing)<option value="{{ $existing->name }}">{{ $existing->stock_no }}</option>@endforeach</datalist>
+                <x-ui.input label="Item name" name="name" value="{{ old('name') }}" required />
 				<x-ui.input label="Code / Stock number" name="stock_no" value="{{ old('stock_no') }}" required />
 				<x-ui.input label="Description" name="description" value="{{ old('description') }}" />
 				<x-ui.input label="Brand" name="brand" value="{{ old('brand') }}" />
@@ -38,7 +41,8 @@
 					</select>
 					@error('classification')<div class="soims-error">{{ $message }}</div>@enderror
 				</div>
-				<x-ui.input label="Unit of measure" name="unit_of_measure" value="{{ old('unit_of_measure') }}" required />
+				<div class="soims-field" id="existing-stock-details" hidden><p class="soims-label">Existing stock</p><p id="existing-stock-quantity" role="status" aria-live="polite"></p><p class="soims-lead">Enter additional quantity below. This will be added to the current stock.</p></div>
+                <x-ui.input label="Unit of measure" name="unit_of_measure" value="{{ old('unit_of_measure') }}" required />
 			</div>
 		</section>
 
@@ -67,4 +71,67 @@
 		</div>
 	</form>
 </x-ui.card>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('.soims-receive-form');
+    const field = name => form.elements.namedItem(name);
+    const stockField = field('stock_no');
+    const nameField = field('name');
+    const itemIdField = document.getElementById('existing_item_id');
+    const panel = document.getElementById('existing-stock-details');
+    const quantityText = document.getElementById('existing-stock-quantity');
+    const items = @json($existingItems->map(fn ($item) => [
+        'id' => $item->id,
+        'stock_no' => $item->stock_no,
+        'name' => $item->name,
+        'description' => $item->description,
+        'brand' => $item->brand,
+        'quality' => $item->quality,
+        'supplier' => $item->supplier,
+        'category_id' => $item->category_id,
+        'classification' => $item->classification,
+        'unit_of_measure' => $item->unit_of_measure,
+        'quantity' => $item->inventory?->quantity_on_hand ?? 0,
+    ])->values());
+    stockField.setAttribute('list', 'stock-number-matches');
+    nameField.setAttribute('list', 'item-name-matches');
+
+    function clearExisting() {
+        itemIdField.value = '';
+        panel.hidden = true;
+        quantityText.textContent = '';
+    }
+    function fill(item) {
+        itemIdField.value = item.id;
+        for (const key of ['stock_no', 'name', 'description', 'brand', 'quality', 'supplier', 'category_id', 'classification', 'unit_of_measure']) {
+            const control = field(key);
+            if (control) control.value = item[key] ?? '';
+        }
+        quantityText.textContent = item.quantity + ' ' + (item.unit_of_measure || '');
+        panel.hidden = false;
+    }
+    function match(key, value) {
+        const term = value.trim().toLowerCase();
+        if (!term) { clearExisting(); return; }
+        const matches = items.filter(item => String(item[key]).toLowerCase() === term);
+        if (matches.length === 1) fill(matches[0]);
+        else clearExisting();
+    }
+    stockField.addEventListener('input', () => {
+        if (itemIdField.value) clearExisting();
+    });
+    nameField.addEventListener('input', () => {
+        if (itemIdField.value) clearExisting();
+    });
+    stockField.addEventListener('change', () => match('stock_no', stockField.value));
+    nameField.addEventListener('change', () => match('name', nameField.value));
+    stockField.addEventListener('blur', () => match('stock_no', stockField.value));
+    nameField.addEventListener('blur', () => match('name', nameField.value));
+    if (itemIdField.value) {
+        const existing = items.find(item => String(item.id) === String(itemIdField.value));
+        if (existing) fill(existing);
+    }
+});
+</script>
 @endsection
