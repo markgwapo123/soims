@@ -142,8 +142,8 @@
         const overlay = document.getElementById('soims-global-loading');
         const label = document.getElementById('soims-loading-label');
         const actionLabels = [
-            [/sign\\s*out|log\\s*out/i, 'Signing out...'],
-            [/log\\s*in|sign\\s*in/i, 'Signing in...'],
+            [/sign\s*out|log\s*out/i, 'Signing out...'],
+            [/log\s*in|sign\s*in/i, 'Signing in...'],
             [/create account|add user|new user/i, 'Creating account...'],
             [/password/i, 'Updating password...'],
             [/reconcil/i, 'Reconciling inventory...'],
@@ -171,22 +171,22 @@
             [/filter|search/i, 'Filtering results...'],
         ];
         const pageLabels = [
-            [/^\\/dashboard(?:\\/|$)/, 'Loading dashboard...'],
-            [/^\\/login(?:\\/|$)/, 'Loading login...'],
-            [/^\\/admin\\/inventory\\/receive(?:\\/|$)/, 'Loading Add Items...'],
-            [/^\\/admin\\/inventory(?:\\/|$)/, 'Loading inventory...'],
-            [/^\\/admin\\/catalog(?:\\/|$)/, 'Loading catalog...'],
-            [/^\\/requests(?:\\/|$)/, 'Loading supply requests...'],
-            [/^\\/approvals(?:\\/|$)/, 'Loading approvals...'],
-            [/^\\/ris(?:\\/|$)/, 'Loading RIS...'],
-            [/^\\/physical-inventories(?:\\/|$)/, 'Loading physical inventory...'],
-            [/^\\/accountable-items(?:\\/|$)/, 'Loading accountable assets...'],
-            [/^\\/property-returns(?:\\/|$)/, 'Loading property returns...'],
-            [/^\\/admin\\/users(?:\\/|$)/, 'Loading user management...'],
-            [/^\\/reports(?:\\/|$)/, 'Loading reports...'],
-            [/^\\/notifications(?:\\/|$)/, 'Loading notifications...'],
-            [/^\\/audit-logs(?:\\/|$)/, 'Loading audit logs...'],
-            [/^\\/stock-availability(?:\\/|$)/, 'Loading stock availability...'],
+            [/^\/dashboard(?:\/|$)/, 'Loading dashboard...'],
+            [/^\/login(?:\/|$)/, 'Loading login...'],
+            [/^\/admin\/inventory\/receive(?:\/|$)/, 'Loading Add Items...'],
+            [/^\/admin\/inventory(?:\/|$)/, 'Loading inventory...'],
+            [/^\/admin\/catalog(?:\/|$)/, 'Loading catalog...'],
+            [/^\/requests(?:\/|$)/, 'Loading supply requests...'],
+            [/^\/approvals(?:\/|$)/, 'Loading approvals...'],
+            [/^\/ris(?:\/|$)/, 'Loading RIS...'],
+            [/^\/physical-inventories(?:\/|$)/, 'Loading physical inventory...'],
+            [/^\/accountable-items(?:\/|$)/, 'Loading accountable assets...'],
+            [/^\/property-returns(?:\/|$)/, 'Loading property returns...'],
+            [/^\/admin\/users(?:\/|$)/, 'Loading user management...'],
+            [/^\/reports(?:\/|$)/, 'Loading reports...'],
+            [/^\/notifications(?:\/|$)/, 'Loading notifications...'],
+            [/^\/audit-logs(?:\/|$)/, 'Loading audit logs...'],
+            [/^\/stock-availability(?:\/|$)/, 'Loading stock availability...'],
         ];
         function processLabel(element, fallback, isNavigation = false) {
             const explicit = element?.dataset?.loadingLabel;
@@ -204,18 +204,18 @@
                 element?.getAttribute?.('value') || ''
             ].join(' ').trim();
             const routeLabels = [
-                [/\\/login(?:\\/|$)/, 'Signing in...'],
-                [/\\/logout(?:\\/|$)/, 'Signing out...'],
-                [/\\/admin\\/inventory\\/receive/, 'Adding item to inventory...'],
-                [/\\/notifications\\/read-all/, 'Updating notifications...'],
-                [/\\/ris\\//, 'Processing RIS...'],
-                [/\\/approvals\\//, 'Processing approval...'],
-                [/\\/property-returns\\//, 'Processing property return...'],
-                [/\\/accountable-items\\//, 'Updating accountable assets...'],
-                [/\\/physical-inventories\\//, 'Saving inventory count...'],
-                [/\\/admin\\/users\\//, 'Saving user details...'],
-                [/\\/admin\\/catalog\\//, 'Saving catalog changes...'],
-                [/\\/requests(?:\\/|$)/, 'Submitting supply request...'],
+                [/\/login(?:\/|$)/, 'Signing in...'],
+                [/\/logout(?:\/|$)/, 'Signing out...'],
+                [/\/admin\/inventory\/receive/, 'Adding item to inventory...'],
+                [/\/notifications\/read-all/, 'Updating notifications...'],
+                [/\/ris\//, 'Processing RIS...'],
+                [/\/approvals\//, 'Processing approval...'],
+                [/\/property-returns\//, 'Processing property return...'],
+                [/\/accountable-items\//, 'Updating accountable assets...'],
+                [/\/physical-inventories\//, 'Saving inventory count...'],
+                [/\/admin\/users\//, 'Saving user details...'],
+                [/\/admin\/catalog\//, 'Saving catalog changes...'],
+                [/\/requests(?:\/|$)/, 'Submitting supply request...'],
             ];
             for (const [pattern, message] of actionLabels) {
                 if (pattern.test(labelText)) return message;
