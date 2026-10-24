@@ -18,7 +18,7 @@
         @if ($summary)
             <section class="soims-stock__summary" aria-label="Inventory overview">
                 <article><span>Total items</span><strong>{{ number_format($summary['total_items']) }}</strong></article>
-                <article><span>Available consumable stock</span><strong>{{ number_format($summary['available_stock'], 3) }}</strong></article>
+                <article><span>Available consumable stock</span><strong>{{ \App\Support\QuantityFormatter::display($summary['available_stock']) }}</strong></article>
                 <article><span>Low-stock items</span><strong>{{ number_format($summary['low_stock_items']) }}</strong></article>
                 <article><span>Out-of-stock items</span><strong>{{ number_format($summary['out_of_stock_items']) }}</strong></article>
                 <article><span>Available accountable assets</span><strong>{{ number_format($summary['available_assets']) }}</strong></article>
