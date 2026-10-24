@@ -25,7 +25,7 @@
                     <thead><tr><th>Article</th><th>Description</th><th>Property no.</th><th>Unit</th><th>Per card</th><th>Physical count</th><th>New property no.</th><th>Remarks</th></tr></thead>
                     <tbody>@foreach ($physicalInventory->items as $line)
                         <tr>
-                            <td>{{ $line->article }}</td><td>{{ $line->description }}</td><td>{{ $line->old_property_no ?? '-' }}</td><td>{{ $line->unit_of_measure ?? '-' }}</td><td>{{ $line->quantity_per_property_card }}</td>
+                            <td>{{ $line->article }}</td><td>{{ $line->description }}</td><td>{{ $line->old_property_no ?? '-' }}</td><td>{{ $line->unit_of_measure ?? '-' }}</td><td>{{ \App\Support\QuantityFormatter::display($line->quantity_per_property_card) }}</td>
                             <td><input class="soims-input" type="number" min="0" step="0.001" name="counts[{{ $line->id }}][quantity_per_physical_count]" value="{{ old('counts.'.$line->id.'.quantity_per_physical_count') }}" required aria-label="Physical count for {{ $line->article }}"></td>
                             <td><input class="soims-input" name="counts[{{ $line->id }}][new_property_no]" value="{{ old('counts.'.$line->id.'.new_property_no') }}" aria-label="New property number for {{ $line->article }}"></td>
                             <td><input class="soims-input" name="counts[{{ $line->id }}][remarks]" value="{{ old('counts.'.$line->id.'.remarks') }}" aria-label="Count remarks for {{ $line->article }}"></td>
@@ -52,7 +52,7 @@
             <div class="soims-table-wrap"><table class="soims-table soims-physical-count__table">
                 <thead><tr><th>Article</th><th>Description</th><th>Property no.</th><th>Unit</th><th>Per card</th><th>Physical count</th><th>Shortage</th><th>Overage</th><th>Remarks</th></tr></thead>
                 <tbody>@foreach ($physicalInventory->items as $line)
-                    <tr><td>{{ $line->article }}</td><td>{{ $line->description }}</td><td>{{ $line->new_property_no ?? $line->old_property_no ?? '-' }}</td><td>{{ $line->unit_of_measure ?? '-' }}</td><td>{{ $line->quantity_per_property_card }}</td><td>{{ $line->quantity_per_physical_count }}</td><td>{{ $line->shortage_quantity }}</td><td>{{ $line->overage_quantity }}</td><td>{{ $line->remarks ?? '-' }}</td></tr>
+                    <tr><td>{{ $line->article }}</td><td>{{ $line->description }}</td><td>{{ $line->new_property_no ?? $line->old_property_no ?? '-' }}</td><td>{{ $line->unit_of_measure ?? '-' }}</td><td>{{ \App\Support\QuantityFormatter::display($line->quantity_per_property_card) }}</td><td>{{ \App\Support\QuantityFormatter::display($line->quantity_per_physical_count) }}</td><td>{{ \App\Support\QuantityFormatter::display($line->shortage_quantity) }}</td><td>{{ \App\Support\QuantityFormatter::display($line->overage_quantity) }}</td><td>{{ $line->remarks ?? '-' }}</td></tr>
                 @endforeach</tbody>
             </table></div>
             @if ($physicalInventory->status === \App\Models\PhysicalInventory::STATUS_COMPLETED)
