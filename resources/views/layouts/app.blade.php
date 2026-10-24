@@ -224,11 +224,25 @@
                 || actionLabels.find(([pattern]) => pattern.test(action))?.[1]
                 || fallback;
         }
-        function show(message) {
+        let pendingLoading = null;
+        function show(message, immediate = false) {
+            clearTimeout(pendingLoading);
+            pendingLoading = null;
             label.textContent = message;
-            overlay.hidden = false;
+            if (immediate) {
+                overlay.hidden = false;
+                return;
+            }
+            pendingLoading = setTimeout(function () {
+                overlay.hidden = false;
+                pendingLoading = null;
+            }, 180);
         }
-        function hide() { overlay.hidden = true; }
+        function hide() {
+            clearTimeout(pendingLoading);
+            pendingLoading = null;
+            overlay.hidden = true;
+        }
         document.addEventListener('submit', function (event) {
             const form = event.target;
             if (!(form instanceof HTMLFormElement) || event.defaultPrevented) return;
