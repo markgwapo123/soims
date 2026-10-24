@@ -27,6 +27,7 @@ class InventoryController extends Controller
     {
         return view('admin.inventory.receive', [
             'categories' => Category::where('is_active', true)->orderBy('name')->get(),
+            'existingItems' => Item::with('inventory')->where('is_active', true)->orderBy('name')->get(),
         ]);
     }
 
