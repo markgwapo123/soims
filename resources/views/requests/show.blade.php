@@ -17,7 +17,7 @@
                 <thead><tr><th>Stock no.</th><th>Item</th><th>Unit</th><th>Requested</th><th>Confirmed</th></tr></thead>
                 <tbody>
                     @foreach ($supplyRequest->items as $line)
-                        <tr><td>{{ $line->item->stock_no }}</td><td>{{ $line->item->name }}</td><td>{{ $line->item->unit_of_measure }}</td><td>{{ $line->requested_quantity }}</td><td>@if ($line->confirmed_quantity !== null){{ ($line->confirmedItem ?? $line->item)->name }} &times; {{ $line->confirmed_quantity }}@else - @endif</td></tr>
+                        <tr><td>{{ $line->item->stock_no }}</td><td>{{ $line->item->name }}</td><td>{{ $line->item->unit_of_measure }}</td><td>{{ \App\Support\QuantityFormatter::display($line->requested_quantity) }}</td><td>@if ($line->confirmed_quantity !== null){{ ($line->confirmedItem ?? $line->item)->name }} &times; {{ \App\Support\QuantityFormatter::display($line->confirmed_quantity) }}@else - @endif</td></tr>
                     @endforeach
                 </tbody>
             </table>
