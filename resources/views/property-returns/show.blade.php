@@ -40,7 +40,7 @@
                         <tr>
                             <td>{{ $line->property_no_snapshot }}</td>
                             <td>{{ $line->description_snapshot }}</td>
-                            <td>{{ $line->quantity }}</td>
+                            <td>{{ \App\Support\QuantityFormatter::display($line->quantity) }}</td>
                             <td>{{ $line->unit_value ?? '-' }}</td>
                             <td>{{ $line->remarks ?? '-' }}</td>
                             <td>{{ $line->accountableItem?->status ?? '-' }}</td>
