@@ -40,7 +40,7 @@
                 <div class="soims-table-wrap"><table class="soims-table soims-physical-inventory__table">
                     <thead><tr><th>Select</th><th>Stock no.</th><th>Article</th><th>Unit</th><th>Quantity per card</th></tr></thead>
                     <tbody>@forelse ($inventories as $inventory)
-                        <tr><td><input type="checkbox" name="inventory_ids[]" value="{{ $inventory->id }}" @checked(in_array((string) $inventory->id, old('inventory_ids', []), true)) aria-label="Count {{ $inventory->item->name }}"></td><td>{{ $inventory->item->stock_no }}</td><td><strong>{{ $inventory->item->name }}</strong></td><td>{{ $inventory->item->unit_of_measure }}</td><td>{{ $inventory->quantity_on_hand }}</td></tr>
+                        <tr><td><input type="checkbox" name="inventory_ids[]" value="{{ $inventory->id }}" @checked(in_array((string) $inventory->id, old('inventory_ids', []), true)) aria-label="Count {{ $inventory->item->name }}"></td><td>{{ $inventory->item->stock_no }}</td><td><strong>{{ $inventory->item->name }}</strong></td><td>{{ $inventory->item->unit_of_measure }}</td><td>{{ \App\Support\QuantityFormatter::display($inventory->quantity_on_hand) }}</td></tr>
                     @empty<tr><td class="soims-physical-inventory__empty" colspan="5">No consumable balances are registered.</td></tr>@endforelse</tbody>
                 </table></div>
             </section>
