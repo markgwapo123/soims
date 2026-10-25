@@ -34,7 +34,7 @@
                                     <td>{{ $row['item']->unit_of_measure }}</td>
                                     <td>{{ \App\Support\QuantityFormatter::display($row['requested']) }}</td>
                                     <td><span class="soims-ris__quantity">{{ \App\Support\QuantityFormatter::display($row['available']) }}</span></td>
-                                    <td><input class="soims-input soims-ris__quantity-input" type="number" min="0" max="{{ $row['max_issue'] }}" step="0.001" name="issue[{{ $row['line']->id }}]" value="{{ old('issue.'.$row['line']->id, \App\Support\QuantityFormatter::display($row['max_issue'])) }}" aria-label="Issue quantity for {{ $row['item']->name }}"></td>
+                                    <td><input class="soims-input soims-ris__quantity-input" type="number" min="0" max="{{ floor($row['max_issue']) }}" step="1" name="issue[{{ $row['line']->id }}]" value="{{ old('issue.'.$row['line']->id, (int) floor($row['max_issue'])) }}" aria-label="Issue quantity for {{ $row['item']->name }}"></td>
                                 </tr>
                             @empty
                                 <tr><td class="soims-ris__empty" colspan="6">This request has no items with a confirmed quantity.</td></tr>
