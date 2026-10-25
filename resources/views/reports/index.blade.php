@@ -38,7 +38,7 @@
                 <thead><tr>@foreach ($columns as $label)<th>{{ $label }}</th>@endforeach</tr></thead>
                 <tbody>
                     @forelse ($rows as $row)
-                        <tr>@foreach (array_keys($columns) as $key)<td>{{ $row->{$key} ?? '-' }}</td>@endforeach</tr>
+                        <tr>@foreach (array_keys($columns) as $key)<td>{{ \App\Support\QuantityFormatter::reportValue($key, $row->{$key} ?? null) }}</td>@endforeach</tr>
                     @empty
                         <tr><td colspan="{{ count($columns) }}">No report records match these filters.</td></tr>
                     @endforelse
