@@ -97,7 +97,8 @@ class DashboardTest extends TestCase
         $response->assertOk()
             ->assertSee('Total received')
             ->assertSee('See More')
-            ->assertSee('See Less')
+            ->assertSee('Close receiving history')
+            ->assertSee('aria-haspopup="dialog"', false)
             ->assertSee('receipts-item-'.$item->id)
             ->assertSee('7');
         $this->assertSame(1, substr_count($response->getContent(), 'aria-controls="receipts-item-'.$item->id.'"'));
