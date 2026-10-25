@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\ReportService;
+use App\Support\QuantityFormatter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -47,7 +48,7 @@ class ReportsController extends Controller
             $stream = fopen('php://output', 'w');
             fputcsv($stream, array_values($columns));
             foreach ($definition['query']->cursor() as $row) {
-                fputcsv($stream, array_map(fn ($key) => $this->csvValue($row->{$key} ?? null), array_keys($columns)));
+                fputcsv($stream, array_map(fn ($key) => $this->csvValue(QuantityFormatter::reportValue($key, $row->{$key} ?? null)), array_keys($columns)));
             }
             fclose($stream);
         }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
