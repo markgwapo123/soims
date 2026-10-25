@@ -84,7 +84,7 @@
                 const data = await response.json();
                 if (id !== latest) return;
                 if (!data.exists) { info.textContent = 'New item: the entered quantity will be initial stock.'; return; }
-                info.textContent = `Existing item: ${data.name} | Classification: ${data.classification} | Current stock: ${data.quantity_on_hand} ${data.unit_of_measure}.`;
+                info.textContent = `Existing item: ${data.name} | Classification: ${data.classification} | Current stock: ${Number(data.quantity_on_hand).toLocaleString('en-US', { maximumFractionDigits: 0 })} ${data.unit_of_measure}.`;
                 for (const fieldName of ['name', 'description', 'category_id', 'classification', 'unit_of_measure', 'default_unit_price', 'reorder_level']) {
                     const field = form.elements.namedItem(fieldName);
                     if (field) field.value = data[fieldName] == null ? '' : String(data[fieldName]);
