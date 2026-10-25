@@ -60,7 +60,7 @@ class DashboardTest extends TestCase
             ->assertSee('Total inventory quantity')
             ->assertSee('Low stock items')
             ->assertSee('Manage users')
-            ->assertSee('Receive stock')
+            ->assertSee('Add Items')
             ->assertDontSee('>My requests</a>', false)
             ->assertDontSee('>New request</a>', false)
             ->assertDontSee('My supply requests')
@@ -149,7 +149,7 @@ class DashboardTest extends TestCase
         $this->actingAs($user)->get(route('dashboard'))
             ->assertOk()
             ->assertSee('Inventory')
-            ->assertSee('Receive stock')
+            ->assertSee('Add Items')
             ->assertDontSee('Manage users')
             ->assertDontSee('My supply requests');
     }
