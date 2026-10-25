@@ -29,7 +29,7 @@
                                         @endforeach
                                     </select>
                                 </td>
-                                <td><input class="soims-input" type="number" min="0" step="0.001" name="lines[{{ $index }}][confirmed_quantity]" value="{{ $line->confirmed_quantity !== null ? \App\Support\QuantityFormatter::display($line->confirmed_quantity) : '' }}" aria-label="Confirmed quantity for {{ $line->item->name }}"></td>
+                                <td><input class="soims-input" type="number" min="0" step="1" name="lines[{{ $index }}][confirmed_quantity]" value="{{ $line->confirmed_quantity !== null ? \App\Support\QuantityFormatter::display($line->confirmed_quantity) : '' }}" aria-label="Confirmed quantity for {{ $line->item->name }}"></td>
                             </tr>
                         @endforeach
                     </tbody>
