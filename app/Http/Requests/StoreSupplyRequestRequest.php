@@ -29,7 +29,7 @@ class StoreSupplyRequestRequest extends FormRequest
             'purpose' => ['required', 'string', 'max:1000'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.item_id' => ['required', 'integer', 'distinct', Rule::exists('items', 'id')->where('is_active', true)],
-            'items.*.quantity' => ['required', 'numeric', 'gt:0', 'max:99999999'],
+            'items.*.quantity' => ['required', 'integer', 'gt:0', 'max:99999999'],
         ];
     }
 
