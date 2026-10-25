@@ -113,10 +113,40 @@
                 <h2 class="soims-section-title">Recent receiving transactions</h2>
                 <div class="soims-table-wrap">
                     <table class="soims-table">
-                        <thead><tr><th>Item</th><th>Quantity</th><th>Received</th><th>Recorded by</th></tr></thead>
+                        <thead><tr><th>Item</th><th>Total received</th><th>Latest received</th><th>Transactions</th><th>Action</th></tr></thead>
                         <tbody>
-                            @foreach ($receivingTransactions as $transaction)
-                                <tr><td>{{ $transaction->item?->name ?? '-' }}</td><td>{{ \App\Support\QuantityFormatter::display($transaction->quantity) }}</td><td>{{ $transaction->occurred_at?->format('Y-m-d H:i') }}</td><td>{{ $transaction->performer?->name ?? '-' }}</td></tr>
+                            @foreach ($receivingTransactions as $group)
+                                <tr>
+                                    <td>{{ $group['item']?->name ?? '-' }}</td>
+                                    <td>{{ \App\Support\QuantityFormatter::display($group['total_quantity']) }}</td>
+                                    <td>{{ $group['latest']->occurred_at?->format('Y-m-d H:i') }}</td>
+                                    <td>{{ $group['transactions']->count() }}</td>
+                                    <td>
+                                        <button class="soims-button soims-button--secondary" type="button"
+                                            aria-expanded="false" aria-controls="receipts-item-{{ $group['latest']->item_id }}"
+                                            onclick="const panel = document.getElementById(this.getAttribute('aria-controls')); const open = panel.hidden; panel.hidden = !open; this.setAttribute('aria-expanded', open ? 'true' : 'false'); this.textContent = open ? 'See Less' : 'See More';">
+                                            See More
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr id="receipts-item-{{ $group['latest']->item_id }}" hidden>
+                                    <td colspan="5">
+                                        <div class="soims-table-wrap">
+                                            <table class="soims-table" aria-label="Receiving history for {{ $group['item']?->name ?? 'item' }}">
+                                                <thead><tr><th>Quantity</th><th>Received</th><th>Recorded by</th></tr></thead>
+                                                <tbody>
+                                                    @foreach ($group['transactions'] as $transaction)
+                                                        <tr>
+                                                            <td>{{ \App\Support\QuantityFormatter::display($transaction->quantity) }}</td>
+                                                            <td>{{ $transaction->occurred_at?->format('Y-m-d H:i') }}</td>
+                                                            <td>{{ $transaction->performer?->name ?? '-' }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>
