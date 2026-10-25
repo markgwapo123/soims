@@ -41,7 +41,7 @@ class CatalogManagementTest extends TestCase
         $category = Category::where('code', 'PAPER')->firstOrFail();
         $this->actingAs($admin)->post(route('admin.catalog.items.store'), [
             'stock_no' => 'PAPER_A4', 'name' => 'A4 Bond Paper', 'category_id' => $category->id,
-            'classification' => 'consumable', 'unit_of_measure' => 'ream', 'default_unit_price' => 250,
+            'classification' => 'consumable', 'unit_of_measure' => 'ream', 'default_unit_price' => 250, 'quantity' => 0,
         ])->assertRedirect(route('admin.catalog.index'));
 
         $this->assertDatabaseHas('items', ['stock_no' => 'PAPER_A4', 'classification' => 'consumable']);
