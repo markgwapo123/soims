@@ -38,7 +38,7 @@ class ReceiveStockRequest extends FormRequest
             'category_id' => ['required_without:item_id', 'nullable', 'integer', 'exists:categories,id'],
             'classification' => ['required_without:item_id', 'nullable', 'in:consumable,accountable'],
             'unit_of_measure' => ['required_without:item_id', 'nullable', 'string', 'max:50'],
-            'quantity' => ['required', 'numeric', 'gt:0'],
+            'quantity' => ['required', 'integer', 'gt:0'],
             'location' => ['nullable', 'string', 'max:255'],
             'lot_no' => ['nullable', 'string', 'max:255'],
             'received_date' => ['required', 'date'],
