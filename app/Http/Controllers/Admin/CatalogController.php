@@ -57,7 +57,7 @@ class CatalogController extends Controller
             'category_id' => $item->category_id,
             'classification' => $item->classification,
             'unit_of_measure' => $item->unit_of_measure,
-            'quantity_on_hand' => $item->inventory?->quantity_on_hand ?? '0.000',
+            'quantity_on_hand' => \App\Support\QuantityFormatter::display($item->inventory?->quantity_on_hand ?? 0),
             'is_active' => $item->is_active,
         ]);
     }
