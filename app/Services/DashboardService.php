@@ -47,8 +47,32 @@ class DashboardService
             $actions[] = ['label' => 'Inventory', 'url' => route('admin.inventory.index')];
             $actions[] = ['label' => 'Receive stock', 'url' => route('admin.inventory.receive')];
             $actions[] = ['label' => 'Physical inventory', 'url' => route('physical-inventories.index')];
+            // Show one dashboard row per item while preserving each receipt in its history.
+            $recentItemIds = InventoryTransaction::query()
+                ->where('type', 'receipt')
+                ->select('item_id')
+                ->groupBy('item_id')
+                ->orderByRaw('MAX(occurred_at) DESC')
+                ->limit(5)
+                ->pluck('item_id');
+
             $receivingTransactions = InventoryTransaction::with(['item', 'performer'])
-                ->where('type', 'receipt')->latest('occurred_at')->limit(5)->get();
+                ->where('type', 'receipt')
+                ->whereIn('item_id', $recentItemIds)
+                ->orderByDesc('occurred_at')
+                ->orderByDesc('id')
+                ->get()
+                ->groupBy('item_id')
+                ->map(function ($transactions) {
+                    return [
+                        'item' => $transactions->first()->item,
+                        'total_quantity' => $transactions->sum('quantity'),
+                        'latest' => $transactions->first(),
+                        'transactions' => $transactions,
+                    ];
+                })
+                ->sortByDesc(fn ($group) => $group['latest']->occurred_at)
+                ->values();
         }
 
         $reviewableTypes = $this->reviewableTypes($user);
