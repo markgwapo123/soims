@@ -37,7 +37,7 @@
                             <td><input class="soims-input" name="found_items[{{ $index }}][description]" value="{{ old('found_items.'.$index.'.description') }}" placeholder="Description" aria-label="Found item description"></td>
                             <td>-</td>
                             <td><input class="soims-input" name="found_items[{{ $index }}][unit_of_measure]" value="{{ old('found_items.'.$index.'.unit_of_measure') }}" aria-label="Found item unit"></td>
-                            <td>0.000</td>
+                            <td>0</td>
                             <td><input class="soims-input" type="number" min="0" step="0.001" name="found_items[{{ $index }}][quantity_per_physical_count]" value="{{ old('found_items.'.$index.'.quantity_per_physical_count') }}" aria-label="Found item physical count"></td>
                             <td><input class="soims-input" name="found_items[{{ $index }}][new_property_no]" value="{{ old('found_items.'.$index.'.new_property_no') }}" aria-label="Found item new property number"></td>
                             <td><input class="soims-input" name="found_items[{{ $index }}][remarks]" value="{{ old('found_items.'.$index.'.remarks') }}" aria-label="Found item remarks"></td>
