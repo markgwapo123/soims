@@ -63,10 +63,10 @@ class InventoryService
             }
 
             $lot = null;
-            if ($attributes['lot_no'] || $attributes['expiration_date'] || $attributes['unit_cost']) {
+            if (!empty($attributes['lot_no']) || !empty($attributes['expiration_date']) || !empty($attributes['unit_cost'])) {
                 $lot = InventoryLot::create([
                     'item_id' => $attributes['item_id'],
-                    'lot_no' => $attributes['lot_no'],
+                    'lot_no' => $attributes['lot_no'] ?? null,
                     'received_date' => $attributes['received_date'],
                     'expiration_date' => $attributes['expiration_date'] ?? null,
                     'unit_cost' => $attributes['unit_cost'] ?? null,
