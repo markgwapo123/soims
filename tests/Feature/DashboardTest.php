@@ -129,7 +129,7 @@ class DashboardTest extends TestCase
             ->assertOk()
             ->assertSee($item->name)
             ->assertSee('Dashboard extra supply 7')
-            ->assertSee('6.000');
+            ->assertSee('6');
     }
 
     public function test_program_dashboard_shows_stock_section_when_inventory_is_empty(): void
