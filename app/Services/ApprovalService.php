@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 
 class ApprovalService
 {
-    public function __construct(private readonly AuditLogService $audit) {}
+    public function __construct(private readonly AuditLogService $audit, private readonly StockReservationService $reservations) {}
 
     /** @return list<string> */
     public function reviewableTypes(User $user): array
@@ -54,6 +54,7 @@ class ApprovalService
             if ($approved) {
                 $request->items()->update(['confirmed_quantity' => DB::raw('requested_quantity')]);
                 $request->update(['status' => SupplyRequest::STATUS_CONFIRMED, 'confirmed_at' => now()]);
+                $this->reservations->synchronize($request);
             } else {
                 $request->update([
                     'status' => SupplyRequest::STATUS_DENIED,
