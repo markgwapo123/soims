@@ -13,7 +13,7 @@ use Illuminate\Validation\ValidationException;
 
 class RequestModificationService
 {
-    public function __construct(private readonly ApprovalService $approvals, private readonly AuditLogService $audit) {}
+    public function __construct(private readonly ApprovalService $approvals, private readonly AuditLogService $audit, private readonly StockReservationService $reservations) {}
 
     /** Confirmed requests the user may modify: Supply Office sees all, approvers only their type. */
     public function modifiable(User $user): Builder
@@ -86,6 +86,8 @@ class RequestModificationService
             if ($changes === 0) {
                 throw ValidationException::withMessages(['lines' => 'No changes were made.']);
             }
+
+            $this->reservations->synchronize($request);
 
             SoimsNotification::create([
                 'user_id' => $request->requestor_id,
