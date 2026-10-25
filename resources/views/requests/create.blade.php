@@ -34,7 +34,7 @@
                                 <td class="soims-request-available">{{ \App\Support\QuantityFormatter::display($item->inventory?->quantity_available ?? 0) }}</td>
                                 <td>
                                     <input type="hidden" name="items[{{ $index }}][item_id]" value="{{ $item->id }}">
-                                    <input class="soims-input soims-request-quantity" type="number" min="0" step="0.001" name="items[{{ $index }}][quantity]" value="{{ old('items.'.$index.'.quantity') }}" aria-label="Quantity for {{ $item->name }}">
+                                    <input class="soims-input soims-request-quantity" type="number" min="0" step="1" name="items[{{ $index }}][quantity]" value="{{ old('items.'.$index.'.quantity') }}" aria-label="Quantity for {{ $item->name }}">
                                 </td>
                             </tr>
                         @empty
