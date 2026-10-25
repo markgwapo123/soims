@@ -9,14 +9,14 @@ class SupplyRequestItem extends Model
 {
     protected $fillable = [
         'supply_request_id', 'item_id', 'confirmed_item_id', 'requested_quantity', 'confirmed_quantity',
-        'issued_quantity', 'unavailable_quantity', 'unit_price_snapshot', 'remarks',
+        'issued_quantity', 'unavailable_quantity', 'reserved_quantity', 'unit_price_snapshot', 'remarks',
     ];
 
     protected function casts(): array
     {
         return [
             'requested_quantity' => 'decimal:3', 'confirmed_quantity' => 'decimal:3',
-            'issued_quantity' => 'decimal:3', 'unavailable_quantity' => 'decimal:3',
+            'issued_quantity' => 'decimal:3', 'unavailable_quantity' => 'decimal:3', 'reserved_quantity' => 'decimal:3',
             'unit_price_snapshot' => 'decimal:2',
         ];
     }
