@@ -245,7 +245,7 @@
         }
         document.addEventListener('submit', function (event) {
             const form = event.target;
-            if (!(form instanceof HTMLFormElement) || event.defaultPrevented) return;
+            if (!(form instanceof HTMLFormElement) || event.defaultPrevented || form.method.toLowerCase() === 'dialog' || form.dataset.noLoading !== undefined) return;
             if (!form.checkValidity()) return;
             if (form.target && form.target !== '_self') return;
             const submitter = event.submitter || form.querySelector('[type="submit"]');
