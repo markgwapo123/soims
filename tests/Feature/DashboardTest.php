@@ -77,6 +77,32 @@ class DashboardTest extends TestCase
             ->assertSee('value="'.$item->stock_no.'"', false);
     }
 
+    public function test_receiving_transactions_group_same_item_with_expandable_history(): void
+    {
+        [$item] = $this->item();
+        $admin = $this->userWithRole('supply_administrator');
+
+        foreach ([2, 5] as $quantity) {
+            InventoryTransaction::create([
+                'item_id' => $item->id,
+                'type' => 'receipt',
+                'quantity' => $quantity,
+                'reference_type' => 'inventory_receipt',
+                'performed_by' => $admin->id,
+                'occurred_at' => now()->subMinutes($quantity),
+            ]);
+        }
+
+        $response = $this->actingAs($admin)->get(route('dashboard'));
+        $response->assertOk()
+            ->assertSee('Total received')
+            ->assertSee('See More')
+            ->assertSee('See Less')
+            ->assertSee('receipts-item-'.$item->id)
+            ->assertSee('7');
+        $this->assertSame(1, substr_count($response->getContent(), 'aria-controls="receipts-item-'.$item->id.'"'));
+    }
+
     public function test_academic_approver_only_sees_academic_requests(): void
     {
         $academic = $this->request('academic', 'submitted');
