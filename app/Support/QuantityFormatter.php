@@ -10,9 +10,6 @@ final class QuantityFormatter
             return '0';
         }
 
-        $formatted = number_format((float) $quantity, 3, '.', ',');
-        return str_contains($formatted, '.')
-            ? rtrim(rtrim($formatted, '0'), '.')
-            : $formatted;
+        return number_format((float) $quantity, 0, '.', ',');
     }
 }
