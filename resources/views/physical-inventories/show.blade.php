@@ -61,4 +61,8 @@
         @endif
         <a class="soims-physical-count__back" href="{{ route('physical-inventories.index') }}">Back to physical inventories</a>
     </div>
+
+<style>
+    .soims-physical-count__table thead th { white-space: nowrap; }
+</style>
 @endsection
