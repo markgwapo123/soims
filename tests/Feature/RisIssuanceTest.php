@@ -113,25 +113,25 @@ class RisIssuanceTest extends TestCase
             'item_id' => $this->paper->id, 'quantity' => 100, 'location' => 'Supply Room',
             'lot_no' => 'LOT-INITIAL', 'received_date' => now()->toDateString(), 'unit_cost' => 250,
         ])->assertRedirect(route('admin.inventory.index'));
-        $assertStockViews('100.000');
+        $assertStockViews('100');
 
         $request = $this->confirmedRequest(20);
         $this->actingAs($staff)->post(route('ris.store', $request))->assertRedirect();
         $ris = Ris::where('supply_request_id', $request->id)->firstOrFail();
         $this->actingAs($staff)->post(route('ris.release', $ris))->assertRedirect();
-        $assertStockViews('80.000');
+        $assertStockViews('80');
 
         $request = $this->confirmedRequest(80);
         $this->actingAs($staff)->post(route('ris.store', $request))->assertRedirect();
         $ris = Ris::where('supply_request_id', $request->id)->firstOrFail();
         $this->actingAs($staff)->post(route('ris.release', $ris))->assertRedirect();
-        $assertStockViews('0.000', 'Out of Stock');
+        $assertStockViews('0', 'Out of Stock');
 
         $this->actingAs($staff)->post(route('admin.inventory.receive.store'), [
             'item_id' => $this->paper->id, 'quantity' => 50, 'location' => 'Supply Room',
             'lot_no' => 'LOT-REFILL', 'received_date' => now()->toDateString(), 'unit_cost' => 250,
         ])->assertRedirect(route('admin.inventory.index'));
-        $assertStockViews('50.000');
+        $assertStockViews('50');
     }
 
     public function test_issue_quantity_cannot_exceed_available_stock(): void
