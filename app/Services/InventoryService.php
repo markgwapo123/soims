@@ -18,9 +18,15 @@ class InventoryService
     public function receive(array $attributes, User $performedBy, ?string $ipAddress = null, ?string $userAgent = null): Inventory
     {
         return DB::transaction(function () use ($attributes, $performedBy, $ipAddress, $userAgent): Inventory {
-            if (!empty($attributes['item_id'])) {
-                $selectedItem = Item::findOrFail($attributes['item_id']);
-                if (!$selectedItem->is_active || $selectedItem->stock_no !== ($attributes['stock_no'] ?? null)) {
+            // Resolve existing stock by stock number even if the browser did not send item_id.
+            // Lock the item so concurrent receipts cannot create a duplicate item.
+            $stockNo = $attributes['stock_no'] ?? null;
+            $selectedItem = !empty($attributes['item_id'])
+                ? Item::whereKey($attributes['item_id'])->lockForUpdate()->firstOrFail()
+                : ($stockNo ? Item::where('stock_no', $stockNo)->lockForUpdate()->first() : null);
+
+            if ($selectedItem) {
+                if (!$selectedItem->is_active || ($stockNo !== null && $selectedItem->stock_no !== $stockNo)) {
                     throw ValidationException::withMessages([
                         'stock_no' => 'The selected existing item does not match this stock number.',
                     ]);
@@ -31,12 +37,11 @@ class InventoryService
                     ]);
                 }
             }
-            $item = isset($attributes['item_id'])
-                ? Item::findOrFail($attributes['item_id'])
-                : Item::create(Arr::only($attributes, [
-                    'stock_no', 'name', 'description', 'brand', 'quality', 'supplier',
-                    'category_id', 'classification', 'unit_of_measure',
-                ]));
+
+            $item = $selectedItem ?? Item::create(Arr::only($attributes, [
+                'stock_no', 'name', 'description', 'brand', 'quality', 'supplier',
+                'category_id', 'classification', 'unit_of_measure',
+            ]));
 
             $itemDetails = Arr::only($attributes, ['brand', 'quality', 'supplier']);
             if ($itemDetails !== []) {
