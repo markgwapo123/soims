@@ -56,7 +56,12 @@ class RisService
             $rows = [];
             foreach ($lines as $row) {
                 $given = $input['issue'][$row['line']->id] ?? null;
-                $issue = ($given === null || $given === '') ? $row['max_issue'] : round((float) $given, 3);
+                if ($given !== null && $given !== '' && (!is_numeric($given) || (float) $given != floor((float) $given))) {
+                    throw ValidationException::withMessages([
+                        'issue' => sprintf('Issue quantity for %s must be a whole number.', $row['item']->name),
+                    ]);
+                }
+                $issue = ($given === null || $given === '') ? floor($row['max_issue']) : (int) $given;
 
                 if ($issue < 0 || $issue - $row['max_issue'] > 0.0005) {
                     throw ValidationException::withMessages([
