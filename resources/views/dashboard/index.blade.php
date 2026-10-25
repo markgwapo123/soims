@@ -123,28 +123,10 @@
                                     <td>{{ $group['transactions']->count() }}</td>
                                     <td>
                                         <button class="soims-button soims-button--secondary" type="button"
-                                            aria-expanded="false" aria-controls="receipts-item-{{ $group['latest']->item_id }}"
-                                            onclick="const panel = document.getElementById(this.getAttribute('aria-controls')); const open = panel.hidden; panel.hidden = !open; this.setAttribute('aria-expanded', open ? 'true' : 'false'); this.textContent = open ? 'See Less' : 'See More';">
+                                            aria-haspopup="dialog" aria-controls="receipts-item-{{ $group['latest']->item_id }}"
+                                            onclick="document.getElementById(this.getAttribute('aria-controls')).showModal()">
                                             See More
                                         </button>
-                                    </td>
-                                </tr>
-                                <tr id="receipts-item-{{ $group['latest']->item_id }}" hidden>
-                                    <td colspan="5">
-                                        <div class="soims-table-wrap">
-                                            <table class="soims-table" aria-label="Receiving history for {{ $group['item']?->name ?? 'item' }}">
-                                                <thead><tr><th>Quantity</th><th>Received</th><th>Recorded by</th></tr></thead>
-                                                <tbody>
-                                                    @foreach ($group['transactions'] as $transaction)
-                                                        <tr>
-                                                            <td>{{ \App\Support\QuantityFormatter::display($transaction->quantity) }}</td>
-                                                            <td>{{ $transaction->occurred_at?->format('Y-m-d H:i') }}</td>
-                                                            <td>{{ $transaction->performer?->name ?? '-' }}</td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -152,9 +134,73 @@
                     </table>
                 </div>
             </section>
+            @foreach ($receivingTransactions as $group)
+                <dialog id="receipts-item-{{ $group['latest']->item_id }}" class="soims-receipts-dialog" aria-labelledby="receipts-title-{{ $group['latest']->item_id }}">
+                    <div class="soims-receipts-dialog__heading">
+                        <div>
+                            <h2 id="receipts-title-{{ $group['latest']->item_id }}">Receiving history — {{ $group['item']?->name ?? 'Item' }}</h2>
+                            <p>Total received: {{ \App\Support\QuantityFormatter::display($group['total_quantity']) }} · {{ $group['transactions']->count() }} transactions</p>
+                        </div>
+                        <form method="dialog"><button type="submit" class="soims-receipts-dialog__close" aria-label="Close receiving history">×</button></form>
+                    </div>
+                    <div class="soims-receipts-dialog__scroll">
+                        <table class="soims-table" aria-label="Receiving history for {{ $group['item']?->name ?? 'item' }}">
+                            <thead><tr><th>Quantity</th><th>Received</th><th>Recorded by</th></tr></thead>
+                            <tbody>
+                                @foreach ($group['transactions'] as $transaction)
+                                    <tr>
+                                        <td>{{ \App\Support\QuantityFormatter::display($transaction->quantity) }}</td>
+                                        <td>{{ $transaction->occurred_at?->format('Y-m-d H:i') }}</td>
+                                        <td>{{ $transaction->performer?->name ?? '-' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <form method="dialog" class="soims-receipts-dialog__footer">
+                        <button type="submit" class="soims-button soims-button--secondary">Close</button>
+                    </form>
+                </dialog>
+            @endforeach
+            <style>
+                .soims-receipts-dialog {
+                    width: min(850px, calc(100vw - 32px));
+                    max-height: calc(100dvh - 32px);
+                    padding: 24px;
+                    border: 1px solid #dce3eb;
+                    border-radius: 12px;
+                    background: #fff;
+                    color: #1e293b;
+                    box-sizing: border-box;
+                }
+                .soims-receipts-dialog::backdrop { background: rgba(15, 23, 42, .55); }
+                .soims-receipts-dialog__heading {
+                    display: flex; justify-content: space-between; align-items: flex-start;
+                    gap: 16px; margin-bottom: 20px;
+                }
+                .soims-receipts-dialog__heading h2 { margin: 0 0 6px; font-size: 1.25rem; }
+                .soims-receipts-dialog__heading p { margin: 0; color: #64748b; }
+                .soims-receipts-dialog__close {
+                    border: 0; background: transparent; color: #475569;
+                    font-size: 28px; cursor: pointer; line-height: 1; padding: 4px 8px;
+                }
+                .soims-receipts-dialog__scroll {
+                    max-height: min(390px, 55dvh);
+                    overflow: auto;
+                    border: 1px solid #dce3eb;
+                    border-radius: 8px;
+                }
+                .soims-receipts-dialog__scroll .soims-table { width: 100%; }
+                .soims-receipts-dialog__scroll .soims-table th { position: sticky; top: 0; z-index: 1; }
+                .soims-receipts-dialog__footer { display: flex; justify-content: flex-end; margin-top: 20px; }
+                @media (max-width: 600px) {
+                    .soims-receipts-dialog { padding: 16px; }
+                    .soims-receipts-dialog__scroll .soims-table { min-width: 500px; }
+                }
+            </style>
         @endif
 
-        @if ($recentRequests->isNotEmpty())
+                @if ($recentRequests->isNotEmpty())
             <section class="soims-dashboard__section">
                 <h2 class="soims-section-title">{{ auth()->user()->hasPermission('approve_supply_requests') ? 'Recent requests to review' : 'Recent requests' }}</h2>
                 <div class="soims-table-wrap">
