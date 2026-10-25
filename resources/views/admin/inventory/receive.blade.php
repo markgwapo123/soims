@@ -47,7 +47,7 @@
 		<section class="soims-receive-group" aria-labelledby="receipt-details-title">
 			<h2 id="receipt-details-title" class="soims-receive-group__title">Receipt details</h2>
 			<div class="soims-receive-fields">
-				<x-ui.input label="Quantity" name="quantity" type="number" step="0.001" value="{{ old('quantity') }}" required />
+				<x-ui.input label="Quantity" name="quantity" type="number" step="1" value="{{ old('quantity') }}" required />
 				<x-ui.input label="Location" name="location" value="{{ old('location') }}" />
 				<x-ui.input label="Received date" name="received_date" type="date" value="{{ old('received_date', now()->toDateString()) }}" required />
 			</div>
