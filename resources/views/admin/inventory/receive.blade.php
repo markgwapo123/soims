@@ -39,7 +39,7 @@
 					</select>
 					@error('classification')<div class="soims-error">{{ $message }}</div>@enderror
 				</div>
-				<div class="soims-field" id="existing-stock-details" hidden><p class="soims-label">Existing stock</p><p id="existing-stock-quantity" role="status" aria-live="polite"></p><p class="soims-lead">Enter additional quantity below. This will be added to the current stock.</p></div>
+				<div class="soims-field" id="existing-stock-details" hidden><p class="soims-label">Existing stock</p><p id="existing-stock-quantity" role="status" aria-live="polite"></p><p id="incoming-stock-total" class="soims-lead" aria-live="polite"></p><p class="soims-lead">Enter additional quantity below. This will be added to the current stock.</p></div>
                 <x-ui.input label="Unit of measure" name="unit_of_measure" value="{{ old('unit_of_measure') }}" required />
 			</div>
 		</section>
@@ -92,20 +92,36 @@ document.addEventListener('DOMContentLoaded', function () {
     const itemIdField = document.getElementById('existing_item_id');
     const panel = document.getElementById('existing-stock-details');
     const quantityText = document.getElementById('existing-stock-quantity');
+    const totalText = document.getElementById('incoming-stock-total');
+    const incomingQuantity = field('quantity');
+    let selectedItem = null;
+    const formatQuantity = value => Number(value).toLocaleString('en-US', { maximumFractionDigits: 3 });
+    function updateTotal() {
+        if (!selectedItem) { totalText.textContent = ''; return; }
+        const incoming = Number(incomingQuantity.value);
+        totalText.textContent = incomingQuantity.value !== '' && Number.isFinite(incoming) && incoming > 0
+            ? 'New total after saving: ' + formatQuantity(Number(selectedItem.quantity) + incoming) + ' ' + (selectedItem.unit_of_measure || '')
+            : '';
+    }
+    incomingQuantity.addEventListener('input', updateTotal);
     const items = JSON.parse(document.getElementById('existing-items-data').textContent);
 
     function clearExisting() {
         itemIdField.value = '';
+        selectedItem = null;
+        totalText.textContent = '';
         panel.hidden = true;
         quantityText.textContent = '';
     }
     function fill(item) {
+        selectedItem = item;
         itemIdField.value = item.id;
         for (const key of ['stock_no', 'name', 'description', 'brand', 'quality', 'supplier', 'category_id', 'classification', 'unit_of_measure']) {
             const control = field(key);
             if (control) control.value = item[key] ?? '';
         }
-        quantityText.textContent = item.quantity + ' ' + (item.unit_of_measure || '');
+        quantityText.textContent = formatQuantity(item.quantity) + ' ' + (item.unit_of_measure || '');
+        updateTotal();
         panel.hidden = false;
     }
     function match(key, value) {
