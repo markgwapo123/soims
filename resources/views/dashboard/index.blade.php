@@ -141,7 +141,7 @@
                             <h2 id="receipts-title-{{ $group['latest']->item_id }}">Receiving history — {{ $group['item']?->name ?? 'Item' }}</h2>
                             <p>Total received: {{ \App\Support\QuantityFormatter::display($group['total_quantity']) }} · {{ $group['transactions']->count() }} transactions</p>
                         </div>
-                        <form method="dialog"><button type="submit" class="soims-receipts-dialog__close" aria-label="Close receiving history">×</button></form>
+                        <button type="button" class="soims-receipts-dialog__close" aria-label="Close receiving history" onclick="this.closest('dialog').close()">×</button>
                     </div>
                     <div class="soims-receipts-dialog__scroll">
                         <table class="soims-table" aria-label="Receiving history for {{ $group['item']?->name ?? 'item' }}">
@@ -157,9 +157,9 @@
                             </tbody>
                         </table>
                     </div>
-                    <form method="dialog" class="soims-receipts-dialog__footer">
-                        <button type="submit" class="soims-button soims-button--secondary">Close</button>
-                    </form>
+                    <div class="soims-receipts-dialog__footer">
+                        <button type="button" class="soims-button soims-button--secondary" onclick="this.closest('dialog').close()">Close</button>
+                    </div>
                 </dialog>
             @endforeach
             <style>
