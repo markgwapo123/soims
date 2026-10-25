@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Item;
+use App\Models\SoimsNotification;
 use App\Models\SupplyRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -61,6 +62,25 @@ class SupplyRequestService
                 'purpose' => $request->purpose,
                 'items' => $request->items->map(fn ($item) => ['item_id' => $item->item_id, 'quantity' => $item->requested_quantity])->all(),
             ], null, $ipAddress, $userAgent);
+
+            // Notify the requesting department and the appropriate approval inbox.
+            SoimsNotification::create([
+                'user_id' => $requestor->id,
+                'type' => 'request_submitted',
+                'title' => 'Request submitted',
+                'message' => sprintf('Request %s was submitted successfully and is awaiting approval.', $request->request_no),
+                'related_type' => SupplyRequest::class,
+                'related_id' => $request->id,
+            ]);
+
+            SoimsNotification::create([
+                'role_key' => $type === SupplyRequest::TYPE_ACADEMIC ? 'daa' : 'administrative_officer',
+                'type' => 'request_pending_approval',
+                'title' => 'New request awaiting approval',
+                'message' => sprintf('Request %s from %s is awaiting your review.', $request->request_no, $department->name),
+                'related_type' => SupplyRequest::class,
+                'related_id' => $request->id,
+            ]);
 
             return $request;
         });
