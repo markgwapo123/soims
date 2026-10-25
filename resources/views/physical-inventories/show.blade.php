@@ -26,7 +26,7 @@
                     <tbody>@foreach ($physicalInventory->items as $line)
                         <tr>
                             <td>{{ $line->article }}</td><td>{{ $line->description }}</td><td>{{ $line->old_property_no ?? '-' }}</td><td>{{ $line->unit_of_measure ?? '-' }}</td><td>{{ \App\Support\QuantityFormatter::display($line->quantity_per_property_card) }}</td>
-                            <td><input class="soims-input" type="number" min="0" step="0.001" name="counts[{{ $line->id }}][quantity_per_physical_count]" value="{{ old('counts.'.$line->id.'.quantity_per_physical_count') }}" required aria-label="Physical count for {{ $line->article }}"></td>
+                            <td><input class="soims-input" type="number" min="0" step="1" name="counts[{{ $line->id }}][quantity_per_physical_count]" value="{{ old('counts.'.$line->id.'.quantity_per_physical_count') }}" required aria-label="Physical count for {{ $line->article }}"></td>
                             <td><input class="soims-input" name="counts[{{ $line->id }}][new_property_no]" value="{{ old('counts.'.$line->id.'.new_property_no') }}" aria-label="New property number for {{ $line->article }}"></td>
                             <td><input class="soims-input" name="counts[{{ $line->id }}][remarks]" value="{{ old('counts.'.$line->id.'.remarks') }}" aria-label="Count remarks for {{ $line->article }}"></td>
                         </tr>
@@ -38,7 +38,7 @@
                             <td>-</td>
                             <td><input class="soims-input" name="found_items[{{ $index }}][unit_of_measure]" value="{{ old('found_items.'.$index.'.unit_of_measure') }}" aria-label="Found item unit"></td>
                             <td>0</td>
-                            <td><input class="soims-input" type="number" min="0" step="0.001" name="found_items[{{ $index }}][quantity_per_physical_count]" value="{{ old('found_items.'.$index.'.quantity_per_physical_count') }}" aria-label="Found item physical count"></td>
+                            <td><input class="soims-input" type="number" min="0" step="1" name="found_items[{{ $index }}][quantity_per_physical_count]" value="{{ old('found_items.'.$index.'.quantity_per_physical_count') }}" aria-label="Found item physical count"></td>
                             <td><input class="soims-input" name="found_items[{{ $index }}][new_property_no]" value="{{ old('found_items.'.$index.'.new_property_no') }}" aria-label="Found item new property number"></td>
                             <td><input class="soims-input" name="found_items[{{ $index }}][remarks]" value="{{ old('found_items.'.$index.'.remarks') }}" aria-label="Found item remarks"></td>
                         </tr>
