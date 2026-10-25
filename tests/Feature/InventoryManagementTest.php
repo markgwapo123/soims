@@ -66,6 +66,30 @@ class InventoryManagementTest extends TestCase
             ->assertOk()->assertSee('A4 Paper')->assertSee('10.000');
     }
 
+    public function test_receiving_existing_stock_adds_to_balance_without_creating_duplicate(): void
+    {
+        $admin = User::factory()->create();
+        $admin->roles()->attach(Role::where('key', 'supply_administrator')->firstOrFail(), ['assigned_at' => now()]);
+        $category = Category::create(['code' => 'SUPPLY', 'name' => 'Supply', 'is_active' => true]);
+        $item = Item::create([
+            'stock_no' => 'BOND_2100', 'name' => 'Bond paper', 'category_id' => $category->id,
+            'classification' => 'consumable', 'unit_of_measure' => 'ream', 'is_active' => true,
+        ]);
+        Inventory::create(['item_id' => $item->id, 'quantity_on_hand' => 4, 'quantity_reserved' => 0]);
+
+        $this->actingAs($admin)->post(route('admin.inventory.receive.store'), [
+            'stock_no' => 'BOND_2100', 'name' => 'Bond paper', 'category_id' => $category->id,
+            'classification' => 'consumable', 'unit_of_measure' => 'ream',
+            'quantity' => 4, 'received_date' => now()->toDateString(),
+        ])->assertRedirect(route('admin.inventory.index'));
+
+        $this->assertSame(1, Item::where('stock_no', 'BOND_2100')->count());
+        $this->assertSame('8.000', $item->inventory()->firstOrFail()->quantity_on_hand);
+        $this->assertDatabaseHas('inventory_transactions', [
+            'item_id' => $item->id, 'type' => 'receipt', 'quantity' => 4,
+        ]);
+    }
+
     public function test_inventory_requires_manage_inventory_permission(): void
     {
         $user = User::factory()->create();
