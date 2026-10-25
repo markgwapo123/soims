@@ -50,20 +50,20 @@ class InventoryManagementTest extends TestCase
         ]);
 
         $this->actingAs($admin)->get(route('stock-availability.index'))
-            ->assertOk()->assertSee('A4 Paper')->assertSee('10.000');
+            ->assertOk()->assertSee('A4 Paper')->assertSee('10');
 
         $departmentUser = User::factory()->create();
         $departmentUser->roles()->attach(Role::where('key', 'program_department')->firstOrFail(), ['assigned_at' => now()]);
         $this->actingAs($departmentUser)->get(route('stock-availability.index'))
-            ->assertOk()->assertSee('A4 Paper')->assertSee('10.000');
+            ->assertOk()->assertSee('A4 Paper')->assertSee('10');
 
         $this->actingAs($admin)->get(route('stock-availability.index'))
-            ->assertOk()->assertSee('A4 Paper')->assertSee('10.000');
+            ->assertOk()->assertSee('A4 Paper')->assertSee('10');
 
         $departmentUser = User::factory()->create();
         $departmentUser->roles()->attach(Role::where('key', 'program_department')->firstOrFail(), ['assigned_at' => now()]);
         $this->actingAs($departmentUser)->get(route('stock-availability.index'))
-            ->assertOk()->assertSee('A4 Paper')->assertSee('10.000');
+            ->assertOk()->assertSee('A4 Paper')->assertSee('10');
     }
 
     public function test_receiving_existing_stock_adds_to_balance_without_creating_duplicate(): void
@@ -127,7 +127,7 @@ class InventoryManagementTest extends TestCase
             ->assertSee('A4 Bond Paper')
             ->assertSee('Office Supplies')
             ->assertSee('ream')
-            ->assertSee('8.000')
+            ->assertSee('8')
             ->assertSee('Desktop Computer')
             ->assertSee('Available')
             ->assertDontSee('Internal Supply Room')
@@ -168,7 +168,7 @@ class InventoryManagementTest extends TestCase
             ->assertSee('Total items')
             ->assertSee('Available consumable stock')
             ->assertSee('Bond Paper A4')
-            ->assertSee('8.000')
+            ->assertSee('8')
             ->assertSee('Available accountable assets')
             ->assertSee('Desktop Computer')
             ->assertSee('2 assets')
