@@ -7,6 +7,7 @@ use App\Models\AuditLog;
 use App\Models\Role;
 use App\Models\Category;
 use App\Models\Item;
+use App\Models\Inventory;
 use App\Models\SupplyRequest;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -129,6 +130,46 @@ class ApprovalWorkflowTest extends TestCase
 
         $this->actingAs($this->userWithRole('supply_administrator'))->get(route('approvals.index'))
             ->assertOk()->assertSee($academic->request_no)->assertSee($nonAcademic->request_no);
+    }
+
+    public function test_approval_reserves_available_stock_without_deducting_on_hand(): void
+    {
+        Inventory::create(['item_id' => $this->item->id, 'quantity_on_hand' => 10, 'quantity_reserved' => 0]);
+        $first = $this->makeRequest('academic', 4);
+        $second = $this->makeRequest('academic', 8);
+        $daa = $this->userWithRole('daa');
+
+        $this->actingAs($daa)->post(route('approvals.decide', $first), ['decision' => 'approve'])->assertRedirect();
+        $this->assertSame('4.000', $first->items()->firstOrFail()->reserved_quantity);
+        $this->assertSame('4.000', Inventory::firstOrFail()->quantity_reserved);
+        $this->assertSame('10.000', Inventory::firstOrFail()->quantity_on_hand);
+
+        $this->actingAs($daa)->post(route('approvals.decide', $second), ['decision' => 'approve'])->assertRedirect();
+        $this->assertSame('6.000', $second->items()->firstOrFail()->reserved_quantity);
+        $this->assertSame('10.000', Inventory::firstOrFail()->quantity_reserved);
+        $this->assertSame('0.000', Inventory::firstOrFail()->quantity_available);
+    }
+
+    public function test_ris_release_clears_own_reservation_without_using_other_requests_stock(): void
+    {
+        Inventory::create(['item_id' => $this->item->id, 'quantity_on_hand' => 10, 'quantity_reserved' => 0]);
+        $first = $this->makeRequest('academic', 4);
+        $second = $this->makeRequest('academic', 6);
+        $daa = $this->userWithRole('daa');
+        $staff = $this->userWithRole('supply_administrator');
+
+        $this->actingAs($daa)->post(route('approvals.decide', $first), ['decision' => 'approve'])->assertRedirect();
+        $this->actingAs($daa)->post(route('approvals.decide', $second), ['decision' => 'approve'])->assertRedirect();
+        $this->assertSame('10.000', Inventory::firstOrFail()->quantity_reserved);
+
+        $this->actingAs($staff)->post(route('ris.store', $first))->assertRedirect();
+        $ris = \App\Models\Ris::where('supply_request_id', $first->id)->firstOrFail();
+        $this->actingAs($staff)->post(route('ris.release', $ris))->assertRedirect();
+
+        $this->assertSame('6.000', Inventory::firstOrFail()->quantity_on_hand);
+        $this->assertSame('6.000', Inventory::firstOrFail()->quantity_reserved);
+        $this->assertSame('0.000', $first->items()->firstOrFail()->reserved_quantity);
+        $this->assertSame('6.000', $second->items()->firstOrFail()->reserved_quantity);
     }
 
     private function userWithRole(string $roleKey): User
