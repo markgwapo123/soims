@@ -772,3 +772,16 @@ a { color: var(--soims-blue-dark); }
 .soims-table th.soims-quantity-center,
 .soims-table td.soims-quantity-center { text-align: center; }
 .soims-inventory__availability { text-align: center; }
+
+/* Keep Laravel's pagination SVG chevrons from inheriting unrestricted dimensions. */
+.soims-card nav[role="navigation"] svg,
+.soims-card nav[aria-label*="Pagination"] svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    max-width: 1.25rem;
+    max-height: 1.25rem;
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+.soims-card nav[role="navigation"] { margin-top: 20px; }
