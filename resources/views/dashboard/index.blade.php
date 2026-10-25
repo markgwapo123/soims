@@ -53,14 +53,14 @@
                 </form>
                 <div class="soims-table-wrap">
                     <table class="soims-table soims-dashboard__stock-table">
-                        <thead><tr><th>Item</th><th>Type</th><th>Current stock</th><th>Available</th><th>Status</th></tr></thead>
+                        <thead><tr><th>Item</th><th>Type</th><th class="soims-quantity-center">Current stock</th><th class="soims-quantity-center">Available</th><th>Status</th></tr></thead>
                         <tbody>
                             @forelse ($stockItems as $item)
                                 <tr>
                                     <td><strong>{{ $item->name }}</strong><small>{{ $item->stock_no }}</small></td>
                                     <td>{{ ucfirst($item->classification) }}</td>
-                                    <td>{{ $item->stock_current_quantity }} {{ $item->classification === 'consumable' ? $item->unit_of_measure : 'assets' }}</td>
-                                    <td>{{ $item->stock_available_quantity }} {{ $item->classification === 'consumable' ? $item->unit_of_measure : 'assets' }}</td>
+                                    <td class="soims-quantity-center">{{ $item->stock_current_quantity }} {{ $item->classification === 'consumable' ? $item->unit_of_measure : 'assets' }}</td>
+                                    <td class="soims-quantity-center">{{ $item->stock_available_quantity }} {{ $item->classification === 'consumable' ? $item->unit_of_measure : 'assets' }}</td>
                                     <td><span class="soims-stock__status is-{{ $item->stock_status }}">{{ ['available' => 'Available', 'low_stock' => 'Low Stock', 'out_of_stock' => 'Out of Stock'][$item->stock_status] }}</span></td>
                                 </tr>
                             @empty
@@ -88,14 +88,14 @@
                 </form>
                 <div class="soims-table-wrap">
                     <table class="soims-table soims-dashboard__stock-table">
-                        <thead><tr><th>Item</th><th>Category</th><th>Unit</th><th>Available</th><th>Status</th></tr></thead>
+                        <thead><tr><th>Item</th><th>Category</th><th>Unit</th><th class="soims-quantity-center">Available</th><th>Status</th></tr></thead>
                         <tbody>
                             @forelse ($stockItems as $item)
                                 <tr>
                                     <td><strong>{{ $item->name }}</strong><small>{{ $item->description }}</small></td>
                                     <td>{{ $item->category?->name ?? 'Uncategorized' }}</td>
                                     <td>{{ $item->unit_of_measure }}</td>
-                                    <td>{{ $item->stock_available_quantity }}</td>
+                                    <td class="soims-quantity-center">{{ $item->stock_available_quantity }}</td>
                                     <td><span class="soims-stock__status is-{{ $item->stock_status }}">{{ ['available' => 'Available', 'low_stock' => 'Low Stock', 'out_of_stock' => 'Out of Stock'][$item->stock_status] }}</span></td>
                                 </tr>
                             @empty
