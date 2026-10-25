@@ -18,7 +18,7 @@ class ModifyConfirmedRequestRequest extends FormRequest
             'reason' => ['required', 'string', 'max:1000'],
             'lines' => ['required', 'array', 'min:1'],
             'lines.*.id' => ['required', 'integer'],
-            'lines.*.confirmed_quantity' => ['nullable', 'numeric', 'min:0', 'max:99999999'],
+            'lines.*.confirmed_quantity' => ['nullable', 'integer', 'min:0', 'max:99999999'],
             'lines.*.confirmed_item_id' => ['nullable', 'integer', 'exists:items,id'],
         ];
     }
