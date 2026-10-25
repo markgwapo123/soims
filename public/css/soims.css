@@ -767,3 +767,8 @@ a { color: var(--soims-blue-dark); }
     .soims-topbar__context { display: none; }
     .soims-dashboard__identity--topbar { flex-direction: column; align-items: flex-end; gap: 3px; }
 }
+
+/* Align stock quantities and availability badges under their column headings. */
+.soims-table th.soims-quantity-center,
+.soims-table td.soims-quantity-center { text-align: center; }
+.soims-inventory__availability { text-align: center; }
