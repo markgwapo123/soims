@@ -17,7 +17,7 @@ class CompletePhysicalInventoryRequest extends FormRequest
         return [
             'counts' => ['required', 'array', 'min:1'],
             'counts.*' => ['required', 'array'],
-            'counts.*.quantity_per_physical_count' => ['required', 'numeric', 'min:0', 'max:999999999'],
+            'counts.*.quantity_per_physical_count' => ['required', 'integer', 'min:0', 'max:999999999'],
             'counts.*.new_property_no' => ['nullable', 'string', 'max:255'],
             'counts.*.remarks' => ['nullable', 'string', 'max:2000'],
             'found_items' => ['nullable', 'array'],
@@ -25,7 +25,7 @@ class CompletePhysicalInventoryRequest extends FormRequest
             'found_items.*.description' => ['nullable', 'string', 'max:5000'],
             'found_items.*.unit_of_measure' => ['nullable', 'string', 'max:50'],
             'found_items.*.unit_value' => ['nullable', 'numeric', 'min:0', 'max:999999999999'],
-            'found_items.*.quantity_per_physical_count' => ['nullable', 'numeric', 'min:0', 'max:999999999'],
+            'found_items.*.quantity_per_physical_count' => ['nullable', 'integer', 'min:0', 'max:999999999'],
             'found_items.*.new_property_no' => ['nullable', 'string', 'max:255'],
             'found_items.*.remarks' => ['nullable', 'string', 'max:2000'],
         ];
