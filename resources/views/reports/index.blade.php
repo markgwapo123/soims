@@ -11,7 +11,7 @@
             </div>
             <div class="soims-report-heading__actions">
                 <span class="soims-report-count">{{ $rows->total() }} {{ $rows->total() === 1 ? 'record' : 'records' }}</span>
-                <a class="soims-button soims-button--secondary" href="{{ route('reports.export', array_filter(['type' => $type, 'from' => $filters['from'] ?? null, 'to' => $filters['to'] ?? null])) }}">Export CSV</a>
+                <a class="soims-button soims-button--secondary" data-no-loading href="{{ route('reports.export', array_filter(['type' => $type, 'from' => $filters['from'] ?? null, 'to' => $filters['to'] ?? null])) }}">Export CSV</a>
             </div>
         </header>
         <section class="soims-report-filter-panel" aria-labelledby="report-filter-title">
