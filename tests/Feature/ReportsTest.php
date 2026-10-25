@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\InventoryTransaction;
+use App\Models\Inventory;
 use App\Models\Item;
 use App\Models\PhysicalInventory;
 use App\Models\PhysicalInventoryItem;
@@ -36,6 +37,41 @@ class ReportsTest extends TestCase
 
         $this->actingAs($user)->get(route('reports.export', ['type' => 'inventory_balances']))
             ->assertOk()->assertHeader('content-type', 'text/csv; charset=UTF-8');
+    }
+
+    public function test_inventory_quantities_are_whole_numbers_in_table_and_csv(): void
+    {
+        $user = $this->userWithRole('supply_administrator');
+        $item = $this->item();
+        Inventory::create([
+            'item_id' => $item->id,
+            'quantity_on_hand' => 7,
+            'quantity_reserved' => 2,
+        ]);
+
+        $this->actingAs($user)->get(route('reports.index', ['type' => 'inventory_balances']))
+            ->assertOk()
+            ->assertSee('Test toner')
+            ->assertDontSee('7.000')
+            ->assertDontSee('2.000')
+            ->assertDontSee('5.000');
+
+        $csv = $this->actingAs($user)
+            ->get(route('reports.export', ['type' => 'inventory_balances']))
+            ->streamedContent();
+        $this->assertStringContainsString('Test toner', $csv);
+        $this->assertStringNotContainsString('7.000', $csv);
+        $this->assertStringNotContainsString('2.000', $csv);
+        $this->assertStringNotContainsString('5.000', $csv);
+    }
+
+    public function test_quantity_formatter_preserves_money_and_identifiers(): void
+    {
+        $this->assertSame('7', \\App\\Support\\QuantityFormatter::reportValue('quantity_on_hand', '7.000'));
+        $this->assertSame('0', \\App\\Support\\QuantityFormatter::reportValue('quantity_reserved', '0.000'));
+        $this->assertSame('19.50', \\App\\Support\\QuantityFormatter::reportValue('unit_cost', '19.50'));
+        $this->assertSame('2100', \\App\\Support\\QuantityFormatter::reportValue('stock_no', '2100'));
+        $this->assertSame('-', \\App\\Support\\QuantityFormatter::reportValue('reorder_level', null));
     }
 
     public function test_stock_movement_report_filters_ledger_dates_and_exports_safe_csv(): void
