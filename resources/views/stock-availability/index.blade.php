@@ -69,9 +69,9 @@
         <div class="soims-table-wrap">
             <table class="soims-table soims-stock__table {{ $canManageInventory ? 'is-internal' : 'is-request-view' }}">
                 @if ($canManageInventory)
-                    <thead><tr><th>Stock no.</th><th>Item</th><th>Category</th><th>Type</th><th>Current stock</th><th>Available</th><th>Status</th></tr></thead>
+                    <thead><tr><th>Stock no.</th><th>Item</th><th>Category</th><th>Type</th><th class="soims-quantity-center">Current stock</th><th class="soims-quantity-center">Available</th><th>Status</th></tr></thead>
                 @else
-                    <thead><tr><th>Item</th><th>Description</th><th>Category</th><th>Unit</th><th>Available</th><th>Status</th></tr></thead>
+                    <thead><tr><th>Item</th><th>Description</th><th>Category</th><th>Unit</th><th class="soims-quantity-center">Available</th><th>Status</th></tr></thead>
                 @endif
                 <tbody>
                     @forelse ($items as $item)
@@ -81,14 +81,14 @@
                                 <td><strong>{{ $item->name }}</strong></td>
                                 <td>{{ $item->category?->name ?? 'Uncategorized' }}</td>
                                 <td>{{ ucfirst($item->classification) }}</td>
-                                <td>{{ $item->stock_current_quantity }} {{ $item->classification === 'consumable' ? $item->unit_of_measure : 'assets' }}</td>
-                                <td>{{ $item->stock_available_quantity }} {{ $item->classification === 'consumable' ? $item->unit_of_measure : 'assets' }}</td>
+                                <td class="soims-quantity-center">{{ $item->stock_current_quantity }} {{ $item->classification === 'consumable' ? $item->unit_of_measure : 'assets' }}</td>
+                                <td class="soims-quantity-center">{{ $item->stock_available_quantity }} {{ $item->classification === 'consumable' ? $item->unit_of_measure : 'assets' }}</td>
                             @else
                                 <td><strong>{{ $item->name }}</strong></td>
                                 <td>{{ $item->description ?: '—' }}</td>
                                 <td>{{ $item->category?->name ?? 'Uncategorized' }}</td>
                                 <td>{{ $item->unit_of_measure }}</td>
-                                <td>{{ $item->stock_available_quantity }}</td>
+                                <td class="soims-quantity-center">{{ $item->stock_available_quantity }}</td>
                             @endif
                             <td><span class="soims-stock__status is-{{ $item->stock_status }}">{{ $statusLabels[$item->stock_status] }}</span></td>
                         </tr>
