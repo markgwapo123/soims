@@ -67,11 +67,11 @@ class ReportsTest extends TestCase
 
     public function test_quantity_formatter_preserves_money_and_identifiers(): void
     {
-        $this->assertSame('7', \\App\\Support\\QuantityFormatter::reportValue('quantity_on_hand', '7.000'));
-        $this->assertSame('0', \\App\\Support\\QuantityFormatter::reportValue('quantity_reserved', '0.000'));
-        $this->assertSame('19.50', \\App\\Support\\QuantityFormatter::reportValue('unit_cost', '19.50'));
-        $this->assertSame('2100', \\App\\Support\\QuantityFormatter::reportValue('stock_no', '2100'));
-        $this->assertSame('-', \\App\\Support\\QuantityFormatter::reportValue('reorder_level', null));
+        $this->assertSame('7', \App\Support\QuantityFormatter::reportValue('quantity_on_hand', '7.000'));
+        $this->assertSame('0', \App\Support\QuantityFormatter::reportValue('quantity_reserved', '0.000'));
+        $this->assertSame('19.50', \App\Support\QuantityFormatter::reportValue('unit_cost', '19.50'));
+        $this->assertSame('2100', \App\Support\QuantityFormatter::reportValue('stock_no', '2100'));
+        $this->assertSame('-', \App\Support\QuantityFormatter::reportValue('reorder_level', null));
     }
 
     public function test_stock_movement_report_filters_ledger_dates_and_exports_safe_csv(): void
