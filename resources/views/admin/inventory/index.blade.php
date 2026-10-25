@@ -20,15 +20,15 @@
 		</div>
 		<div class="soims-table-wrap">
 			<table class="soims-table soims-inventory__table">
-				<thead><tr><th>Stock No.</th><th>Item</th><th>On hand</th><th>Reserved</th><th>Available</th><th></th></tr></thead>
+				<thead><tr><th>Stock No.</th><th>Item</th><th class="soims-inventory__quantity-cell">On hand</th><th class="soims-inventory__quantity-cell">Reserved</th><th class="soims-inventory__quantity-cell">Available</th><th></th></tr></thead>
 				<tbody>
 					@forelse ($inventories as $inventory)
 						<tr>
 							<td class="soims-inventory__stock-no">{{ $inventory->item->stock_no }}</td>
 							<td><strong>{{ $inventory->item->name }}</strong></td>
-							<td>{{ \App\Support\QuantityFormatter::display($inventory->quantity_on_hand) }}</td>
-							<td>{{ \App\Support\QuantityFormatter::display($inventory->quantity_reserved) }}</td>
-							<td><span class="soims-inventory__availability {{ (float) $inventory->quantity_available > 0 ? 'is-available' : 'is-unavailable' }}">{{ \App\Support\QuantityFormatter::display($inventory->quantity_available) }}</span></td>
+							<td class="soims-inventory__quantity-cell">{{ \App\Support\QuantityFormatter::display($inventory->quantity_on_hand) }}</td>
+							<td class="soims-inventory__quantity-cell">{{ \App\Support\QuantityFormatter::display($inventory->quantity_reserved) }}</td>
+							<td class="soims-inventory__quantity-cell"><span class="soims-inventory__availability {{ (float) $inventory->quantity_available > 0 ? 'is-available' : 'is-unavailable' }}">{{ \App\Support\QuantityFormatter::display($inventory->quantity_available) }}</span></td>
 							<td><a class="soims-inventory__stock-card" href="{{ route('admin.inventory.stock-card', $inventory->item) }}">Stock card</a></td>
 						</tr>
 					@empty
@@ -40,4 +40,10 @@
 		{{ $inventories->links() }}
 	</section>
 </section>
+<style>
+    .soims-inventory__table th.soims-inventory__quantity-cell,
+    .soims-inventory__table td.soims-inventory__quantity-cell {
+        text-align: center;
+    }
+</style>
 @endsection
