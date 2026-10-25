@@ -31,7 +31,7 @@ class RisService
             $item = $line->confirmedItem ?? $line->item;
             $inventory = $inventories[$item->id] ?? null;
             $requested = (float) $line->confirmed_quantity;
-            $available = $inventory ? max(0.0, (float) $inventory->quantity_on_hand - (float) $inventory->quantity_reserved) : 0.0;
+            $available = $inventory ? max(0.0, (float) $inventory->quantity_on_hand - (float) $inventory->quantity_reserved + (float) $line->reserved_quantity) : 0.0;
 
             return [
                 'line' => $line, 'item' => $item, 'requested' => $requested,
@@ -162,6 +162,23 @@ class RisService
             $lines = $document->items()->orderBy('id')->lockForUpdate()->get();
             $itemIds = $lines->pluck('item_id')->unique()->all();
             $inventories = Inventory::whereIn('item_id', $itemIds)->orderBy('item_id')->lockForUpdate()->get()->keyBy('item_id');
+            // Free this request's reservations within the same transaction before
+            // validating and deducting its issued stock. Other requests stay reserved.
+            $requestLines = $request->items()->orderBy('id')->lockForUpdate()->get();
+            foreach ($requestLines as $requestLine) {
+                $reserved = (float) $requestLine->reserved_quantity;
+                if ($reserved <= 0) {
+                    continue;
+                }
+                $reservedItemId = $requestLine->confirmed_item_id ?? $requestLine->item_id;
+                $reservedInventory = $inventories->get($reservedItemId);
+                if ($reservedInventory) {
+                    $reservedInventory->quantity_reserved = max(0, (float) $reservedInventory->quantity_reserved - $reserved);
+                    $reservedInventory->save();
+                }
+                $requestLine->reserved_quantity = 0;
+                $requestLine->save();
+            }
             $releasedAt = now();
             $releaseId = DB::table('releases')->insertGetId([
                 'ris_id' => $document->id,
