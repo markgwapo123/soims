@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const totalText = document.getElementById('incoming-stock-total');
     const incomingQuantity = field('quantity');
     let selectedItem = null;
-    const formatQuantity = value => Number(value).toLocaleString('en-US', { maximumFractionDigits: 3 });
+    const formatQuantity = value => Number(value).toLocaleString('en-US', { maximumFractionDigits: 0 });
     function updateTotal() {
         if (!selectedItem) { totalText.textContent = ''; return; }
         const incoming = Number(incomingQuantity.value);
